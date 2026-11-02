@@ -28,4 +28,4 @@
 - 代码层面：Dart 侧已具备"可解析 + 依赖闭合"，其它语言仅"语法审查"。
 - 行为层面：**没有任何一项**经过真机或运行期验证。
 - 因此 README 与交付说明中不得出现"鸿蒙端已适配完成""仓颉已验证"等表述。
-C:\Users\16857\Desktop\dsh\_bilisail\validation-add.md
+C:\Users\16857\Desktop\dsh\_bilisail\validation-add.mdC:\Users\16857\Desktop\dsh\_bilisail\evidence-add.md

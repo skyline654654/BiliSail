@@ -43,7 +43,7 @@ class WorkspaceBottomBar extends StatelessWidget {
     this.height = 52,
     this.iconSize = 16,
     this.labelStyle = const TextStyle(fontSize: 11, height: 1.2),
-    this.immersive = HarmonySystem.supportsImmersiveLight,
+    this.immersive,
   });
 
   final List<WorkspaceBottomBarItem> items;
@@ -54,7 +54,9 @@ class WorkspaceBottomBar extends StatelessWidget {
   final TextStyle labelStyle;
 
   /// When true the bar paints the「沉浸光感」material under the destinations.
-  final bool immersive;
+  /// Null means "decide from the platform capabilities at build time"; it has to
+  /// stay nullable because a default argument must be a compile-time constant.
+  final bool? immersive;
 
   static const double _createSlotWidth = 64;
   static const double _createButtonSize = 40;
@@ -66,6 +68,7 @@ class WorkspaceBottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final barTheme = NavigationBarTheme.of(context);
+    final useImmersive = immersive ?? HarmonySystem.supportsImmersiveLight;
     final content = SafeArea(
       top: false,
       child: SizedBox(height: height, child: _destinationRow(context)),
@@ -73,7 +76,7 @@ class WorkspaceBottomBar extends StatelessWidget {
     return Material(
       key: const ValueKey('workspace-bottom-navigation'),
       color: Colors.transparent,
-      child: immersive
+      child: useImmersive
           ? ImmersiveLightSurface(child: content)
           : ColoredBox(
               color: barTheme.backgroundColor ?? colors.surface,

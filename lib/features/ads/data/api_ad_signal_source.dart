@@ -26,7 +26,7 @@ final class ApiAdSignalSource implements AdSignalSource {
   }) => requests.run((context) async {
     final signals = <AdDanmakuSignal>[];
     for (var index = 1; index <= segmentCount; index++) {
-      if (context.cancellation.isCancelled) break;
+      if (context.cancellation?.isCancelled == true) break;
       final items = await api.getDanmakuSegment(cid, index, context: context);
       for (final item in items) {
         // Only moving/scrolling chatter can mark a boundary; the detector

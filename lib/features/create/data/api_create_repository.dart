@@ -138,7 +138,7 @@ final class ApiCreateRepository implements CreateRepository {
       AppFailureKind.timeout,
       '$prefix：请求超时',
     ),
-    ApiFailureCategory.authentication || ApiFailureCategory.forbidden =>
+    ApiFailureCategory.authentication || ApiFailureCategory.permission =>
       AppFailure(AppFailureKind.authentication, '$prefix：请先登录'),
     ApiFailureCategory.rateLimited => AppFailure(
       AppFailureKind.rateLimited,

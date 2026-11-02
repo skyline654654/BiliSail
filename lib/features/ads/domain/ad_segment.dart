@@ -32,8 +32,7 @@ final class AdSegment {
     required this.source,
     required this.confidence,
     this.label,
-  }) : assert(start >= Duration.zero, 'segment start must not be negative'),
-       assert(end > start, 'segment end must be after its start');
+  });
 
   final Duration start;
   final Duration end;
@@ -46,6 +45,13 @@ final class AdSegment {
 
   /// Human-readable category shown on the skip button, e.g.「赞助广告」.
   final String? label;
+
+  /// Whether the span is usable: non-negative start and a positive length.
+  ///
+  /// Kept as a getter instead of a constructor assertion because `Duration`
+  /// comparison is not const-evaluable, and the constructor must stay `const`
+  /// so callers can build segments in constant contexts.
+  bool get isValid => !start.isNegative && end > start;
 
   Duration get length => end - start;
 

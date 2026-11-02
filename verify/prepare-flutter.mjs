@@ -53,4 +53,6 @@ const stripped = [
 writeFileSync(pubspec, stripped, 'utf8');
 console.log('stripped', end - start, 'override lines');
 
-execFileSync('flutter', ['pub', 'get'], { cwd: repoRoot, stdio: 'inherit' });
+// On Windows `flutter` is a .bat, which execFileSync cannot launch directly;
+// run it through the shell so the same script works on every host.
+execFileSync('flutter pub get', { cwd: repoRoot, stdio: 'inherit', shell: true });

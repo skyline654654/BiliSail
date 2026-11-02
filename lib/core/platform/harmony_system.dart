@@ -111,6 +111,13 @@ abstract final class HarmonySystem {
   /// The capabilities the shell reported; [none] until [attach] succeeds.
   static HarmonyShellCapabilities get capabilities => _capabilities;
 
+  /// Whether the immersive「沉浸光感」treatment should be applied to the
+  /// Flutter-drawn chrome (theme glass, backdrop gradient).
+  ///
+  /// The real system material lives in ArkUI and only reaches ArkUI components;
+  /// this flag only decides whether the Flutter approximation runs.
+  static bool get supportsImmersiveLight => isHarmonyOS;
+
   /// Whether ArkUI owns the bottom bar, so Flutter must not draw a second one.
   static bool get hostsBottomBar => _capabilities.hostsBottomBar;
 

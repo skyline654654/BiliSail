@@ -53,7 +53,6 @@ import 'shortcut_coordinator.dart';
 import 'image_cache_binding.dart';
 import 'dependencies.dart';
 import 'router.dart';
-import 'theme.dart';
 import 'workspace_playback_window.dart';
 
 class BiliApp extends ConsumerStatefulWidget {
