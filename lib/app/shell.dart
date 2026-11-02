@@ -12,6 +12,7 @@ import '../features/search/presentation/search_entry_header.dart';
 import '../core/presentation/workspace_activity.dart';
 import '../core/presentation/page_back_scope.dart';
 import '../core/presentation/predictive_back_region.dart';
+import '../shared/ui/cover_transition.dart';
 import '../core/presentation/trackpad_back_region.dart';
 import 'workspace_bottom_bar.dart';
 import 'workspace_tabs.dart';
@@ -257,7 +258,11 @@ final class _BiliAppShellState extends State<BiliAppShell>
       : _canGoBack;
 
   void _closeCurrentTabOrBackWithinPage() {
+    final wasActivePlayback =
+        _workspace.playbackId != null &&
+        _workspace.activeId == _workspace.playbackId;
     if (!_goBackWithinPage()) _closeTab(_workspace.activeId);
+    if (wasActivePlayback) _playBackCoverTransition();
   }
 
   void _trackpadBack() {
@@ -446,8 +451,36 @@ final class _BiliAppShellState extends State<BiliAppShell>
   }
 
   void _selectTab(String id) {
+    // 离开播放页时反向收起，其它切页只在有封面登记时展开。
+    final previousPlaybackId = _workspace.playbackId;
+    final wasActivePlayback =
+        previousPlaybackId != null && _workspace.activeId == previousPlaybackId;
     setState(() => _workspace.select(id));
     _commitWorkspace();
+    if (wasActivePlayback && id != previousPlaybackId) {
+      _playBackCoverTransition();
+    } else {
+      _playForwardCoverTransition();
+    }
+  }
+
+  /// 关闭播放页后反跑同一组参数，落点就是封面原来的矩形。
+  void _playBackCoverTransition() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      CoverTransition.playBack(context);
+    });
+  }
+
+  /// 切页完成后播放「封面 → 播放页」的展开动画。
+  ///
+  /// 只有用户刚点过封面（登记仍在有效期）时才会命中，其它切页路径是空操作；
+  /// 放到 post-frame 是因为目标页要先把播放画面布局出来，动画才有终点可落。
+  void _playForwardCoverTransition() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      CoverTransition.playForward(context);
+    });
   }
 
   void _returnToPlayback() {

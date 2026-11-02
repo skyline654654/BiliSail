@@ -87,8 +87,9 @@ final class CoverFlight {
     flight = CoverFlight._(entry: entry, controller: controller, animation: animation);
     overlay.insert(entry);
     controller.addStatusListener((status) {
+      // 动画结束后必须释放 ticker，否则 Ticker 会留在测试与热重载里泄漏。
       if (status == AnimationStatus.completed || status == AnimationStatus.dismissed) {
-        if (entry.mounted) entry.remove();
+        flight.dispose();
       }
     });
     controller.forward();

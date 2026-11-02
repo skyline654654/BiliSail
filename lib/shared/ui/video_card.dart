@@ -1,5 +1,6 @@
 import '../../domain/user.dart';
 import 'bili_icons.dart';
+import 'cover_transition.dart';
 import 'app_cover_image.dart';
 import 'bili_badges.dart';
 import 'highlighted_text.dart';
@@ -159,6 +160,8 @@ final class VideoCard extends StatefulWidget {
 }
 
 final class _VideoCardState extends State<VideoCard> {
+  /// 封面矩形是容器转场的起点；只包封面，不含标题与元信息。
+  final GlobalKey _coverKey = GlobalKey();
   static const _titleFontSize = 15.0;
 
   bool _hovered = false;
@@ -240,7 +243,22 @@ final class _VideoCardState extends State<VideoCard> {
           borderRadius: BorderRadius.circular(7),
           clipBehavior: Clip.none,
           child: InkWell(
-            onTap: widget.feedback == null ? () => widget.onTap() : null,
+            onTap: widget.feedback == null
+                ? () {
+                    final coverContext = _coverKey.currentContext;
+                    if (coverContext != null) {
+                      // 在导航发生之前登记起点矩形，外壳切页时再播放展开动画。
+                      CoverTransition.capture(
+                        coverContext,
+                        cover: AppCoverImage(
+                          url: video.coverUrl,
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    }
+                    widget.onTap();
+                  }
+                : null,
             hoverColor: Colors.transparent,
             hoverDuration: Duration.zero,
             onFocusChange: (value) => _update(() => _focused = value),
@@ -248,6 +266,7 @@ final class _VideoCardState extends State<VideoCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AspectRatio(
+                  key: _coverKey,
                   aspectRatio: 16 / 9,
                   child: switch (widget.feedback) {
                     final feedback? => VideoCardFeedbackCover(
