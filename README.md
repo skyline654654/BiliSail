@@ -3,7 +3,7 @@
 > 并新增 `harmony/`（ArkTS 原生壳 + 系统材质底栏）与 `cangjie/`（仓颉核心，`@C` 导出）。
 >
 > 文档：[鸿蒙适配手册](docs/harmony-adaptation.md) · [仓颉移植手册](docs/cangjie-port.md) ·
-> [广告屏蔽与 AI 跳过](docs/ad-blocking.md) · [验证状态](docs/validation/adaptation-status-2026-11-02.md)
+> [广告屏蔽与 AI 跳过](docs/ad-blocking.md) · [鸿蒙接口符合性清单](docs/harmony-conformance.md) · [验证状态](docs/validation/adaptation-status-2026-11-02.md)
 >
 > ⚠️ ArkTS 与仓颉侧**尚未编译**（本机无 DevEco Studio / 仓颉 SDK），只经语法审查；细节见验证状态表。
 
