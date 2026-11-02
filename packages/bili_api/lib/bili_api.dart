@@ -1,5 +1,6 @@
 export 'src/api_client.dart';
 export 'src/clients/cast_client.dart';
+export 'src/clients/creation_client.dart';
 export 'src/clients/app_recommendation_client.dart';
 export 'src/clients/app_passport_client.dart';
 export 'src/models/app_recommendation_models.dart';

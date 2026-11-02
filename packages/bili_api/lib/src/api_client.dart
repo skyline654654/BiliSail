@@ -408,6 +408,8 @@ final class BiliApiClient {
       '/x/v2/reply/add',
       '/x/relation/modify',
       '/x/relation/tags/addUsers',
+      '/x/vu/web/add',
+      '/x/article/creative/article/submit',
     }.contains(path)) {
       throw ArgumentError('Unsupported mutation');
     }

@@ -10,6 +10,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
+import '../features/create/application/create_controller.dart';
+import '../features/create/data/api_create_repository.dart';
+import '../features/create/data/file_selector_create_media_picker.dart';
 import '../core/network/api_requests.dart';
 import '../domain/media_cdn.dart';
 import '../domain/audio_quality.dart';
@@ -372,6 +375,13 @@ class AppDependencies {
         ),
         downloadSourceRepositoryProvider.overrideWithValue(downloadSources),
         sessionEpochProvider.overrideWithValue(() => requests.sessionEpoch),
+        // 创作入口：图文走 Web 文本提交，视频需要媒体上传通道（当前未接入，会明确报错）。
+        createRepositoryProvider.overrideWithValue(
+          ApiCreateRepository(CreationClient(api), requests),
+        ),
+        createMediaPickerProvider.overrideWithValue(
+          const FileSelectorCreateMediaPicker(),
+        ),
         castMediaRepositoryProvider.overrideWithValue(
           ApiCastMediaRepository(
             api,
