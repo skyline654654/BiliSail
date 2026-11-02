@@ -36,6 +36,7 @@
 | 尊重系统「减弱动效」 | 已实现 | 同一文件 + `MediaQuery.disableAnimationsOf` |
 | 图片按目标尺寸解码 | 已实现（上游既有） | `lib/core/presentation/app_image_provider.dart` |
 | 构建严格模式 `strictMode` | 已实现 | `harmony/build-profile.json5` |
+| release 构建（混淆规则 `-remove-log`、保留通道名） | 已实现 | `harmony/entry/obfuscation-rules.txt` |
 | `systemBarEffect` 智能反色 | **待办** | 需 API 12+ 真机验证后再开 |
 | ArkUI 页面预加载 | **待办** | 内容全在 Flutter 内，壳层无独立页面可预加载 |
 | ArkUI 断点响应式 | **部分** | 现用 Flutter `WindowSizePolicy`；壳层只按避让区响应 |

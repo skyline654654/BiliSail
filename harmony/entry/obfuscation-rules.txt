@@ -1,0 +1,15 @@
+# 混淆规则（DevEco Studio 会在新建工程时生成，命令行初始化不生成，release 构建必需）
+# 参考：https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/source-obfuscation
+#
+# 本项目保持最小开启：只做导出名与顶层名的混淆，属性名混淆会破坏 ArkTS 与 Flutter 之间的
+# 通道约定（method channel 的名字来自 Dart 侧常量），不在本工程启用。
+
+-enable-toplevel-obfuscation
+-enable-export-obfuscation
+-remove-log
+
+# 保留：与 Flutter 侧约定的通道/回调名不参与混淆
+-keep-global-name
+  flutter
+  bilisail
+  ohos

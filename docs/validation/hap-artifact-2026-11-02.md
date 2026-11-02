@@ -42,25 +42,54 @@
 | `debug` / `buildMode` | `true` / `debug` | 当前是 debug 构建（侧载调试用） |
 | `vendor` | `bilisail` | — |
 
-## 4. 已知问题：release 模式构建失败
+## 4. release 构建：已从失败修到成功
+
+### 4.1 失败原因（不是引擎 har）
 
 ```
 hvigorw assembleHap -p buildMode=release
   → ERROR: Failed :entry:default@CompileArkTS
-  → 00304036 Not Found  (AdaptorError)
-  → BUILD FAILED in 3s 346ms
+  → 00304036 Not Found
+     The obfuscation rule file './obfuscation-rules.txt' cannot be found
+     in ...\harmony\entry\obfuscation-rules.txt. The error module is entry.
 ```
 
-debug 模式同一份代码 BUILD SUCCESSFUL，所以不是业务代码问题，而是 release 链路缺东西。
-当前观察到的线索（尚未定位）：
+**根因**：`entry/obfuscation-rules.txt` 不存在。该文件由 DevEco Studio 新建工程时自动生成，
+命令行初始化不会生成；release 构建做混淆时才去读它。与之前猜测的「HAR 桩缺产物」无关。
 
-1. `flutter_ohos` 是**手写的离线 HAR 桩**（真实引擎 har 缺失），hvigor 已警告
-   「HAR modules cannot be installed independently / applyToProducts 不生效」；
-2. release 编译会额外做产物裁剪与 API 检查，桩模块可能缺少 release 需要的声明或产物。
+### 4.2 修复
 
-结论：**release HAP 目前产不出来**，已产出的签名包是 debug 构建。侧载到测试设备调试是可行的，
-但不适合作为对外分发包。要出 release，先换真实 `@ohos/flutter_ohos` 引擎 har（见 `docs/harmony-adaptation.md` 第 8 节）。
+新增 `harmony/entry/obfuscation-rules.txt`，保持最小开启（只做顶层名与导出名混淆）：
 
+```
+-enable-toplevel-obfuscation
+-enable-export-obfuscation
+-remove-log
+-keep-global-name
+  flutter
+  bilisail
+  ohos
+```
+
+不启用 `-enable-property-obfuscation`：属性名混淆会破坏 Dart ↔ ArkTS 的通道约定。
+
+### 4.3 结果
+
+| 项 | 值 |
+| --- | --- |
+| 构建 | `assembleHap -p buildMode=release` → **BUILD SUCCESSFUL** |
+| 未签名产物 | 235,991 B |
+| 签名产物 | `harmony/dist/bili-easy-release-signed.hap`，270,644 B |
+| SHA-256 | `dd4f280a36ff42c117137f40bebdd0f675c0c6747be3ce0367ba593ccd1cfcb7` |
+| 签名/校验 | `sign-app` success / `verify-app` success |
+| `module.json` | `debug=false`、`buildMode=release`、`targetAPIVersion=260000026`、`bundleName=dev.bilisail.client`、`metadata=ohos.arkui.UIMaterial.state:enable` |
+
+## 4.4 一个被撤销的配置改动
+
+为消除 hvigor 的 `targetSdkVersion` 告警，曾把 `targetSdkVersion` 设为 `5.0.0(12)`。
+实测后果：release 包的 `targetAPIVersion` 从 **260000026 掉到 50000012**，
+会关掉 API 26 才提供的能力（包括本次要用的 `systemMaterial` 沉浸光感）。
+该配置已撤销，保留告警，理由记录在此：**告警的收益小于降 targetAPI 的代价**。
 ## 5. 本轮按官方建议补的配置
 
 `build-profile.json5` 的 product 里显式加了 `targetSdkVersion`（与 `compatibleSdkVersion` 同为 `5.0.0(12)`），
