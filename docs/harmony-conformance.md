@@ -56,7 +56,7 @@
 - 任何真机 / 云调试运行结果；
 - `systemMaterial` 的实际视觉效果（需 API 26 设备）；
 - `avoidAreaChange` 在折叠屏 / 分屏下的回推时序；
-- 签名与安装（调试 Profile 需要设备 UDID，当前尚未申请到设备）。
+- 安装与运行（签名已完成，但尚未在真机/云设备上安装）。
 
 ## 6. 签名链路现状
 
@@ -65,6 +65,7 @@
 | AGC 应用 | 已建：bili easy / APP ID 6917620749510987805 / dev.bilisail.client |
 | 调试证书 | 已建：bilisail-debug（生效，2027-11-03），已下载 `harmony/signature/bilisail-debug.cer` |
 | 私钥 | 本机 keytool 生成 `harmony/signature/debug.p12`（EC P-256） |
-| 调试设备 | **未注册**（需要设备 UDID） |
-| 调试 Profile | **未创建**（依赖设备） |
-| 签名 HAP | **未产出**（依赖 Profile） |
+| 发布证书 | 已建：`bilisail-release`（生效，2029-11-03），已下载 `signature/bilisail-release.cer` |
+| 发布 Profile | 已建：`bilisail-release`（发布 / dev.bilisail.client / bili easy），已下载 `signature/bilisail-release.p7b` |
+| **签名 HAP** | **已产出并校验通过**：`entry-default-signed.hap`（314,749 B），`hap-sign-tool verify-app` 返回 Verify success |
+| 安装到设备 | 未做（发布 Profile 不含设备 UDID；侧载需设备信任该证书链） |
