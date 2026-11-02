@@ -1,0 +1,275 @@
+{
+  "resolves": [
+    {
+      "rootPackageName": "bilisail::bilicore",
+      "modulePath": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie",
+      "packagePath": {
+        "isMultiplatform": false,
+        "sources": {
+          "roots": [
+            "src"
+          ],
+          "graph": {
+            "src": {
+              "indeg": [],
+              "outdeg": []
+            }
+          },
+          "toposort": [
+            "src"
+          ],
+          "data": {
+            "src": {
+              "sourceSetDir": "src",
+              "srcDir": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\src",
+              "features": [],
+              "product": true,
+              "configuredProduct": true,
+              "outputSuffix": ""
+            }
+          }
+        }
+      },
+      "fullName": "bilisail::bilicore",
+      "isMacroPackage": false,
+      "output-type": "dynamic",
+      "compile-option": "",
+      "native-compile-option": "",
+      "customized-option": {},
+      "link-option": "",
+      "native-link-option": "",
+      "requires": [],
+      "std-requires": [
+        {
+          "std.core": []
+        }
+      ],
+      "c_libs": {},
+      "cross_c_libs": {},
+      "hasTestFiles": false,
+      "hasProdFiles": true,
+      "hasTestsInProdFiles": false,
+      "accessLevel": "public",
+      "features": [
+        "os.windows"
+      ],
+      "deducer": {
+        "features": [],
+        "mapping": {}
+      }
+    },
+    {
+      "rootPackageName": "bilisail::bilicore",
+      "modulePath": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie",
+      "packagePath": {
+        "isMultiplatform": false,
+        "sources": {
+          "roots": [
+            "src"
+          ],
+          "graph": {
+            "src": {
+              "indeg": [],
+              "outdeg": []
+            }
+          },
+          "toposort": [
+            "src"
+          ],
+          "data": {
+            "src": {
+              "sourceSetDir": "src",
+              "srcDir": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\src\\ad",
+              "features": [],
+              "product": true,
+              "configuredProduct": true,
+              "outputSuffix": ""
+            }
+          }
+        }
+      },
+      "fullName": "bilisail::bilicore.ad",
+      "isMacroPackage": false,
+      "output-type": "dynamic",
+      "compile-option": "",
+      "native-compile-option": "",
+      "customized-option": {},
+      "link-option": "",
+      "native-link-option": "",
+      "requires": [],
+      "std-requires": [
+        {
+          "std.collection": [
+            "std.core",
+            "std.math"
+          ]
+        },
+        {
+          "std.core": []
+        },
+        {
+          "std.math": [
+            "std.core"
+          ]
+        }
+      ],
+      "c_libs": {},
+      "cross_c_libs": {},
+      "hasTestFiles": false,
+      "hasProdFiles": true,
+      "hasTestsInProdFiles": false,
+      "accessLevel": "public",
+      "features": [
+        "os.windows"
+      ],
+      "deducer": {
+        "features": [],
+        "mapping": {}
+      }
+    },
+    {
+      "rootPackageName": "bilisail::bilicore",
+      "modulePath": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie",
+      "packagePath": {
+        "isMultiplatform": false,
+        "sources": {
+          "roots": [
+            "src"
+          ],
+          "graph": {
+            "src": {
+              "indeg": [],
+              "outdeg": []
+            }
+          },
+          "toposort": [
+            "src"
+          ],
+          "data": {
+            "src": {
+              "sourceSetDir": "src",
+              "srcDir": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\src\\abi",
+              "features": [],
+              "product": true,
+              "configuredProduct": true,
+              "outputSuffix": ""
+            }
+          }
+        }
+      },
+      "fullName": "bilisail::bilicore.abi",
+      "isMacroPackage": false,
+      "output-type": "dynamic",
+      "compile-option": "",
+      "native-compile-option": "",
+      "customized-option": {},
+      "link-option": "",
+      "native-link-option": "",
+      "requires": [
+        "bilisail::bilicore.ad"
+      ],
+      "std-requires": [
+        {
+          "std.collection": [
+            "std.core",
+            "std.math"
+          ]
+        },
+        {
+          "std.core": []
+        },
+        {
+          "std.math": [
+            "std.core"
+          ]
+        }
+      ],
+      "c_libs": {},
+      "cross_c_libs": {},
+      "hasTestFiles": false,
+      "hasProdFiles": true,
+      "hasTestsInProdFiles": false,
+      "accessLevel": "public",
+      "features": [
+        "os.windows"
+      ],
+      "deducer": {
+        "features": [],
+        "mapping": {}
+      }
+    },
+    {
+      "rootPackageName": "bilisail::bilicore_verify",
+      "modulePath": ".",
+      "packagePath": {
+        "isMultiplatform": false,
+        "sources": {
+          "roots": [
+            "src"
+          ],
+          "graph": {
+            "src": {
+              "indeg": [],
+              "outdeg": []
+            }
+          },
+          "toposort": [
+            "src"
+          ],
+          "data": {
+            "src": {
+              "sourceSetDir": "src",
+              "srcDir": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\verify\\src",
+              "features": [],
+              "product": true,
+              "configuredProduct": true,
+              "outputSuffix": ""
+            }
+          }
+        }
+      },
+      "fullName": "bilisail::bilicore_verify",
+      "isMacroPackage": false,
+      "output-type": "executable",
+      "compile-option": "",
+      "native-compile-option": "",
+      "customized-option": {},
+      "link-option": "",
+      "native-link-option": "",
+      "requires": [
+        "bilisail::bilicore.ad"
+      ],
+      "std-requires": [
+        {
+          "std.collection": [
+            "std.core",
+            "std.math"
+          ]
+        },
+        {
+          "std.core": []
+        },
+        {
+          "std.math": [
+            "std.core"
+          ]
+        }
+      ],
+      "c_libs": {},
+      "cross_c_libs": {},
+      "hasTestFiles": false,
+      "hasProdFiles": true,
+      "hasTestsInProdFiles": false,
+      "accessLevel": "public",
+      "features": [
+        "os.windows"
+      ],
+      "deducer": {
+        "features": [],
+        "mapping": {}
+      }
+    }
+  ],
+  "binDeps": {},
+  "crossBinDeps": {}
+}

@@ -98,3 +98,21 @@ ld.lld: error: cannot open crtn.o: No such file or directory
 
 这条结论对项目的影响：`cangjie/` 的**源码正确性已被本机 windows 目标编译证实**，
 但"产出 `libbilicore.so` 放进鸿蒙工程"这一步必须在装有 DevEco 的机器上完成。
+
+### Dart ↔ 仓颉 语义等价比对（2026-11-02 实测）
+
+`verify/compare.mjs` 把同一批 8 个 fixture 分别喂给两套实现，输出逐行比对：
+
+| case | 输出 |
+| --- | --- |
+| typical_short_ad | `0-180000@670` |
+| below_vote_threshold | （空） |
+| clustered_votes | `0-420000@790` |
+| too_short_segment | （空） |
+| merged_close_boundaries | `0-200000@683` |
+| beyond_duration | （空） |
+| two_ads | `0-300000@750` |
+| empty | （空） |
+
+结果：**8/8 完全一致（IDENTICAL）**。这意味着仓颉实现不是"另写了一份相似逻辑"，
+而是与线上 Dart 实现行为等价；将来任一侧改动都应重跑这个脚本。

@@ -86,9 +86,65 @@ final class AirstrikeDetector {
 
     // The advertisement runs from the previous boundary (or the video start)
     // to the cluster that says "the real content starts here".
+    return segmentsFromBoundaries(boundaries, videoDuration: videoDuration);
+  }
+
+  /// Clusters candidate timecodes into accepted boundaries.
+  ///
+  /// Public for the same reason as [segmentsFromBoundaries]: the Cangjie port
+  /// implements the identical contract over `Int64`, and the fixture harness
+  /// runs both on one input.
+  List<Duration> clusterBoundaries(
+    Iterable<Duration> points, {
+    required Duration videoDuration,
+  }) {
+    if (videoDuration <= Duration.zero) return const [];
+    final votes = <Duration, int>{};
+    var inspected = 0;
+    for (final point in points) {
+      if (inspected >= maximumCandidates) break;
+      inspected++;
+      if (point < Duration.zero || point >= videoDuration) continue;
+      votes.update(point, (count) => count + 1, ifAbsent: () => 1);
+    }
+    if (votes.isEmpty) return const [];
+    final ordered = votes.keys.toList()..sort();
+    final clusters = <({Duration at, int votes})>[];
+    for (final at in ordered) {
+      final previous = clusters.isEmpty ? null : clusters.last;
+      if (previous != null && at - previous.at <= clusterWindow) {
+        clusters[clusters.length - 1] = (
+          at: previous.at,
+          votes: previous.votes + votes[at]!,
+        );
+      } else {
+        clusters.add((at: at, votes: votes[at]!));
+      }
+    }
+    return [
+      for (final cluster in clusters)
+        if (cluster.votes >= minimumVotes) cluster.at,
+    ];
+  }
+
+  /// Builds spans from already-clustered boundaries.
+  ///
+  /// This is the seam the Cangjie implementation mirrors: the detector parses
+  /// text, then delegates here, and `cangjie/src/ad/airstrike.cj` implements the
+  /// same contract over `Int64` milliseconds. Keeping it public lets a fixture
+  /// comparison run both implementations on one input.
+  List<AdSegment> segmentsFromBoundaries(
+    List<Duration> boundaries, {
+    required Duration videoDuration,
+  }) {
+    if (videoDuration <= Duration.zero) return const [];
     final segments = <AdSegment>[];
     var cursor = Duration.zero;
     for (final boundary in boundaries) {
+      if (boundary <= cursor || boundary > videoDuration) {
+        if (boundary > cursor) cursor = boundary;
+        continue;
+      }
       final length = boundary - cursor;
       if (length >= minimumSegment && length <= maximumSegment) {
         segments.add(

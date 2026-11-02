@@ -1,0 +1,98 @@
+{
+  "options~bilisail::bilicore.ad|x86_64-w64-mingw32|false|false|": {
+    "value": 7221571273890853323,
+    "inputHash": 0,
+    "outputHash": 7221571273890853323
+  },
+  "read~bilisail::bilicore.ad|": {
+    "value": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\src\\ad",
+    "inputHash": 0,
+    "outputHash": 145988019522862015
+  },
+  "options~bilisail::bilicore|x86_64-w64-mingw32|false|false|": {
+    "value": -8269895041254922455,
+    "inputHash": 0,
+    "outputHash": -8269895041254922455
+  },
+  "compile~bilisail::bilicore.abi|x86_64-w64-mingw32|false|false|dynamic|": {
+    "value": [
+      {
+        "path": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\verify\\target\\release\\bilicore@bilisail\\libbilicore.abi@bilisail.dll",
+        "checkKind": "check-exists"
+      },
+      {
+        "path": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\verify\\target\\release\\bilicore@bilisail\\bilicore.abi@bilisail.cjo",
+        "checkKind": "check-timestamp"
+      }
+    ],
+    "inputHash": -8346802943895442261,
+    "outputHash": -5189840288885062980
+  },
+  "compile~bilisail::bilicore_verify|x86_64-w64-mingw32|false|false|executable|": {
+    "value": [
+      {
+        "path": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\verify\\target\\release\\bin\\main.exe",
+        "checkKind": "check-exists"
+      },
+      {
+        "path": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\verify\\target\\release\\bin\\bilicore_verify@bilisail.cjo",
+        "checkKind": "check-timestamp"
+      }
+    ],
+    "inputHash": -3443424420903607764,
+    "outputHash": -5189840288885062980
+  },
+  "options~bilisail::bilicore_verify|x86_64-w64-mingw32|false|false|": {
+    "value": 1961767579707015568,
+    "inputHash": 0,
+    "outputHash": 1961767579707015568
+  },
+  "compile~bilisail::bilicore.ad|x86_64-w64-mingw32|false|false|dynamic|": {
+    "value": [
+      {
+        "path": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\verify\\target\\release\\bilicore@bilisail\\libbilicore.ad@bilisail.dll",
+        "checkKind": "check-exists"
+      },
+      {
+        "path": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\verify\\target\\release\\bilicore@bilisail\\bilicore.ad@bilisail.cjo",
+        "checkKind": "check-timestamp"
+      }
+    ],
+    "inputHash": 6501319200499898113,
+    "outputHash": -5189840288885059114
+  },
+  "options~bilisail::bilicore.abi|x86_64-w64-mingw32|false|false|": {
+    "value": -8140965389402049536,
+    "inputHash": 0,
+    "outputHash": -8140965389402049536
+  },
+  "read~bilisail::bilicore_verify|": {
+    "value": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\verify\\src",
+    "inputHash": 0,
+    "outputHash": 145988019516523118
+  },
+  "compile~bilisail::bilicore|x86_64-w64-mingw32|false|false|dynamic|": {
+    "value": [
+      {
+        "path": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\verify\\target\\release\\bilicore@bilisail\\libbilicore@bilisail.dll",
+        "checkKind": "check-exists"
+      },
+      {
+        "path": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\verify\\target\\release\\bilicore@bilisail\\bilicore@bilisail.cjo",
+        "checkKind": "check-timestamp"
+      }
+    ],
+    "inputHash": -7284421741202905133,
+    "outputHash": -5189840288885059114
+  },
+  "read~bilisail::bilicore|": {
+    "value": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\src",
+    "inputHash": 0,
+    "outputHash": 3155947217148969097
+  },
+  "read~bilisail::bilicore.abi|": {
+    "value": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\src\\abi",
+    "inputHash": 0,
+    "outputHash": 3155947217148974704
+  }
+}

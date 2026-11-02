@@ -1,0 +1,16 @@
+[package]
+  cjc-version = "1.2.0"
+  name = "bilicore_verify"
+  organization = "bilisail"
+  description = "Dart/Cangjie fixture comparison"
+  version = "0.1.0"
+  target-dir = ""
+  script-dir = ""
+  output-type = "executable"
+  compile-option = ""
+  override-compile-option = ""
+  link-option = ""
+  package-configuration = {}
+
+[dependencies]
+  "bilisail::bilicore" = { path = ".." }

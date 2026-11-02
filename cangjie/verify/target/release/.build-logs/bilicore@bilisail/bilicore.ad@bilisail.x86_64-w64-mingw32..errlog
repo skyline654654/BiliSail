@@ -1,0 +1,17 @@
+warning[0m: function 'sortBy' is deprecated. Use global function `public func sort<T>(data: ArrayList<T>, by!: (T, T) -> Ordering, stable!: Bool = false, descending!: Bool = false): Unit` in std.sort instead.
+  ==> C:\Users\16857\Desktop\dsh\_bilisail\work\BiliSail-OpenHarmony\cangjie\src\ad\airstrike.cj:36:13:
+   | 
+36 |     ordered.sortBy(comparator: { a: Int64, b: Int64 => a.compare(b) })
+   |             ^^^^^^ deprecated
+   | 
+   # note: this warning can be suppressed by setting the compiler option `-Woff deprecated`
+
+warning[0m: function 'sortBy' is deprecated. Use global function `public func sort<T>(data: ArrayList<T>, by!: (T, T) -> Ordering, stable!: Bool = false, descending!: Bool = false): Unit` in std.sort instead.
+  ==> C:\Users\16857\Desktop\dsh\_bilisail\work\BiliSail-OpenHarmony\cangjie\src\ad\segment.cj:76:13:
+   | 
+76 |     ordered.sortBy(comparator: {
+   |             ^^^^^^ deprecated
+   | 
+   # note: this warning can be suppressed by setting the compiler option `-Woff deprecated`
+
+2 warnings generated, 2 warnings printed.
