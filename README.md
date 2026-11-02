@@ -1,3 +1,12 @@
+> **本仓库是 BiliSail 的仓颉 / 原生鸿蒙适配分支。** 在保留上游全部功能的前提下新增：
+> 底栏中间「+」创作入口（视频 / 图文）、全局沉浸光感、广告屏蔽、AI 视频广告识别与一键跳过；
+> 并新增 `harmony/`（ArkTS 原生壳 + 系统材质底栏）与 `cangjie/`（仓颉核心，`@C` 导出）。
+>
+> 文档：[鸿蒙适配手册](docs/harmony-adaptation.md) · [仓颉移植手册](docs/cangjie-port.md) ·
+> [广告屏蔽与 AI 跳过](docs/ad-blocking.md) · [验证状态](docs/validation/adaptation-status-2026-11-02.md)
+>
+> ⚠️ ArkTS 与仓颉侧**尚未编译**（本机无 DevEco Studio / 仓颉 SDK），只经语法审查；细节见验证状态表。
+
 <p align="center">
   <img src="assets/branding/app_icon.png" width="144" height="144" alt="BiliSail 哔帆应用图标">
 </p>

@@ -10,6 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
+import '../features/ads/data/ai_assisted_sponsor_repository.dart';
+import '../features/ads/data/api_ad_signal_source.dart';
 import '../features/create/application/create_controller.dart';
 import '../features/create/data/api_create_repository.dart';
 import '../features/create/data/file_selector_create_media_picker.dart';
@@ -275,8 +277,11 @@ class AppDependencies {
         return PlaybackSession(
           rateMemory: playbackRateMemory,
           volumeMemory: playbackVolumeMemory,
-          sponsorRepository: ApiSponsorRepository(
-            SponsorBlockClient(sponsorTransport),
+          // 社区片段（SponsorBlock）+ 本地推断（弹幕空降）合并；
+          // 装饰器让既有手动/自动跳过链路保持唯一所有者。
+          sponsorRepository: AiAssistedSponsorRepository(
+            inner: ApiSponsorRepository(SponsorBlockClient(sponsorTransport)),
+            signalSource: ApiAdSignalSource(api, requests),
           ),
           engine: MediaKitEngine(onDiagnostic: playbackLog?.record),
           repository: repository,
