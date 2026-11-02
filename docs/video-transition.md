@@ -27,6 +27,21 @@ for (final path in ['/', '/search', '/video/:bvid', ...])
 | 开播 | `PlaybackSession` / `PlaybackManager` | 目标页 `initState` 里立即 `prepare(play: true)` |
 | 首帧预热 | `lib/features/video/application/video_card_preview_playback.dart` | 悬停预览播放器，转场前就已在出画 |
 
+## 3.1 已接入（2026-11-02）
+
+| 位置 | 改动 |
+| --- | --- |
+| `lib/shared/ui/cover_transition.dart`（新增） | 登记起点：`capture(context, cover:)`；播放：`playForward` / `playBack`；有效期 2 秒 |
+| `lib/shared/ui/video_card.dart` | 封面外层加 `GlobalKey`，`onTap` 里先 `CoverTransition.capture(...)` 再导航 |
+| `lib/app/shell.dart` → `_selectTab` | 切页后按 post-frame 播前进；若离开播放页则反向收起 |
+| `lib/app/shell.dart` → `_closeCurrentTabOrBackWithinPage` | 关闭播放页后反跑同一组参数 |
+
+判据：`flutter analyze` 对上述 4 个文件 **0 issues**；`verify/analysis-env` 单测 **11 项全过**
+（含转场登记语义：无登记不播、clear 后失效）。
+
+**未验证**：动画本体只在纯函数层面被断言（几何单调/非线性/端点精确），
+真实观感（无跳变、反向落点、fps）必须在设备上确认；本条不构成“转场已验证”的结论。
+
 ## 3. 接入方式（三步）
 
 1. 封面点击处：先 `captureFlightRect` 采样，再 `context.go` 到视频地址，
