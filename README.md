@@ -295,3 +295,4 @@ Pop-Location
 本项目尚未确定开源许可证。第三方依赖与素材保留各自许可和权利范围，公开源码不代表所有资源均已取得再分发授权。
 
 部分参考图标目前仅记录了本机预览的采用范围，对外发行前仍需核实；原生播放器及其子依赖的许可材料也需单独归档。详见[第三方来源与分发检查](THIRD_PARTY_NOTICES.md)及[资源来源](assets/README.md)。
+C:/Users/16857/Desktop/dsh/_bilisail/install-note.md
