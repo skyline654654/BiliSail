@@ -19,3 +19,4 @@ node verify/compare.mjs
 退出码 0 表示逐行一致。**2026-11-02 实测结果见 [仓颉移植手册](../docs/cangjie-port.md)。**
 
 修改 fixture 时只改 `cases.dart` 与 `cangjie/verify/src/cases.cj` 两处同源数据。
+C:\Users\16857\Desktop\dsh\_bilisail\verify-readme-add.md
