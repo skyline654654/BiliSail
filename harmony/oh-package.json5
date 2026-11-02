@@ -1,0 +1,13 @@
+{
+  "modelVersion": "5.0.0",
+  "name": "bilisail_harmony",
+  "version": "1.0.0",
+  "description": "BiliSail 的 HarmonyOS 原生壳：ArkUI 系统组件 + 仓颉能力模块",
+  "main": "",
+  "author": "BiliSail OpenHarmony port",
+  "license": "GPL-3.0-only",
+  "dependencies": {
+    "@ohos/flutter_ohos": "file:./har/ohos/flutter_ohos",
+    "libbilicore": "file:./entry/src/main/cangjie"
+  }
+}

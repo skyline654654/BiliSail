@@ -332,184 +332,20 @@ FRB 支持跨平台是可行性依据，但平台构建、取消、错误和流�
 
 **采用边界**：只读参考 `dart_simple_live` 和 MIT `canvas_danmaku` 0.2.7/0.3.3 的思路，独立实现，不替换时钟契约或增加依赖。图集/自定义 GPU、逐条 Widget/Layer 或完整库迁移需要另外的性能与兼容证据；本轮同场景 Windows Profile、行为回归与未测平台见 [密集弹幕性能优化](validation/danmaku-performance.md)。
 
-## D40：音量均衡使用服务端响度与独立原生增益
+## D73：鸿蒙采用「ArkUI 原生壳 + Flutter 内容」双层结构，底栏由 ArkUI 渲染
 
-**决定（2026-10-11）**：普通视频与影视复用播放接口可选响度元数据，提供标准／高动态／关闭，默认关闭。主应用计算目标与测量值之差，播放器包只接收通用 dB 增益；与用户音量、源切换和播放意图分别管理。无合法数据或素材响度过低时保持原声，不增加实时 AGC、压缩器或整段音频扫描。
+**决定**：`harmony/` 是 Stage 模型的 ArkTS 工程，负责窗口沉浸（`setImmersiveModeEnabledState`，API 12+）、避让区（`TYPE_SYSTEM` + `TYPE_NAVIGATION_INDICATOR` 取大值，px→vp）、以及**用 ArkUI 系统组件渲染底栏**（`SymbolGlyph` + `backgroundBlurStyle` + API 26 的 `uiMaterial` 系统材质）。内容区由 `FlutterPage` 承载。Dart 侧通过 `describe()` 的 `hostsBottomBar` 得知不要重复画底栏。
 
-**原生选择**：当前 Windows mpv 不提供所需 FFmpeg `volume` 滤镜及新 `volume-gain` 属性，采用现有 `replaygain=no`／`replaygain-fallback`，写后读回确认，切换以有界短时平滑完成。不更换二进制或增加运行时依赖。
+**原因**：调研原文（[鸿蒙 API 笔记](research/harmonyos-api-notes.md)）确认两件事：① 官方「沉浸光感」的落点是 `uiMaterial.ImmersiveMaterial`/`.systemMaterial()`（API 26.0.0，需 `module.json5` 声明 `ohos.arkui.UIMaterial.state=enable`，仅 entry 模块生效），它**只作用于 ArkUI 组件**，Flutter 自绘的像素拿不到；② `expandSafeArea` 在组件设固定宽高时只支持 TOP/START，官方示例图注写明「未扩展至底部导航条」，底栏靠它铺到手势条下不可能成功。用户要求「沉浸光感全局适配、尽量用系统级组件」，因此底栏易帜为原生组件，这是唯一能真正拿到系统材质的路径。
 
-**验证边界**：UGC 在线元数据、UGC／PGC 本机分轨会话及工程回归见 [播放器音量均衡](validation/audio-normalization.md)。抽查的公开影视未返回响度数据，按缺失降级；Android／macOS 原生行为及极端素材听感仍待验证。
+**取舍**：底栏的两套实现（Flutter 的 `WorkspaceBottomBar` 与 ArkTS 的 `WorkspaceBottomBar`）必须保持同一信息架构；通过能力协商决定用哪一套，非鸿蒙平台永远走 Flutter 那套，行为与上游一致。切换目的项要经通道回传，避免两处各持一份选中状态。
 
-## D41：Windows 硬解使用已修复的图形互操作并按 GPU 设备交付
+**未验证**：没有 DevEco Studio 与真机，ArkTS 侧全部代码未经编译；`FlutterPage`/`FlutterView` 的确切组件名依赖所用 `@ohos/flutter_ohos` har 版本。
 
-**决定（2026-10-13）**：Windows x64 单独固定带 ANGLE 扩展检查修复的 LGPL libmpv 构建，继续使用 `media_kit` 的自动／软件解码选择与既有 PlayerEngine/VideoSurface 契约。不强制所有硬件支持 D3D11，不修改 Android/macOS native 库或 Pub 缓存。
+## D74：仓颉边界收窄为纯计算 + C ABI，时间码解析留在 Dart
 
-**交付与生命周期**：原生输出借用 ANGLE D3D11 device，让绘制和必要复制共享即时上下文，以有序提交替代每帧 CPU 等待 GPU。仅在确认消费者为同一设备时直接共享；其他情况保留独立复制纹理，按 draw revision 避免重复复制。保留窗口视口上限、队列公平性、旧纹理注销与 render-context 销毁屏障，不终止其他组件共用的 EGL display。
+**决定**：`cangjie/` 只实现片段合并、边界聚类与置信度映射，导出 `bilicore_detect_airstrike` 等 `@C` 函数；**弹幕文本的时间码解析留在 Dart**（`AirstrikeDetector`），跨语言只传 `Int64` 数值。
 
-**弹幕与测量**：空／未来事件窗口不连续重绘；到期事件在既有有界插值范围内由单次唤醒触发，暂停、缓冲、seek、换控制器与 dispose 取消或重新锚定。GPU 比较固定素材、物理输出尺寸、解码器实值及进程/适配器，同时记录频率与功耗，不把百分比降低写成全平台或固定收益。来源、测试、前后数据与未测项见 [Windows GPU 优化结果](validation/windows-gpu-optimization-2026-10-13.md)。
+**原因**：[仓颉调研](research/cangjie-notes.md) 给出三个约束：① 仓颉与宿主的唯一可验证边界是 C ABI（与仓库已有的 `bili_mux` 同形态）；② 1.2.0 的 `std` 没有 JSON/HTTP/MD5，这些在 `stdx`，而鸿蒙 6.0+ 用 `stdx.crypto` 必须自带 OpenSSL `.so`，成本高；③ 网络/会话搬进仓颉会与「`bili_api` 纯 Dart 协议层」的既有边界冲突，且阻塞式网络会占住 Dart isolate 的调用栈。字符串/编码是最不适合做 FFI 边界的类型，所以文本解析不跨语言。
 
-## D42：维护自有 media-kit fork 的 Android Surface 生命周期
-
-**决定（2026-10-16）**：按用户要求，基于自有官方 fork 兼容移植 PiliPlus 所用两个 MIT 分支的 Surface、原生参数、实例锁与 FFI 扩展，依赖固定 Git 提交，保留官方当前 API 和 Windows 渲染补丁。Android Surface 由 mpv load/unload 屏障管理，尺寸更新不产生隐式 seek；自动解码优先 MediaCodec，软件选择仍受原设置控制。
-
-**范围与验收**：Android 原生资产采用固定摘要的 20260906 default 构建，其他平台原生 wrapper 沿用锁定版本。弹幕保留原 Ticker/时钟，只减少重复入场索引和缓存保护工作。来源许可、各项采用说明、检查/构建及实机边界见 [移植记录](validation/piliplus-media-kit-port.md)。
-
-## D43：分离播放控制、视频输出与平台合成
-
-**决定（2026-10-23）**：保留 Dart 会话协调、media-kit/libmpv 与现有 Flutter 呈现。PlayerEngine 契约保持纯 Dart；VideoOutput 管理视图挂载与视口；VideoCompositionAdapter 管理视频与 Flutter 前景的组合。现有 VideoController、视口通道及尺寸任务由独立 MediaKitVideoOutput 持有，engine 负责其源绑定和最终释放。
-
-**取舍**：先建立可测试的替换边界，保留弹幕、字幕、控件、全屏与预览的现有样式和交互；不引入 Rust，不新增解码器或平台合成实验。输出与合成必须配套选择，不能把 Widget 依赖或业务规则重新塞入控制契约。
-
-**迁移与验收**：Windows DComp/embedder、Android Surface/HC/HCPP、macOS 原生图层后续分别验证；这次不承诺任意输出热切或 GPU 收益。设计和本轮验证结果见[播放控制、视频输出与平台合成拆分](player-output-composition-design.md)。
-
-## D44：晴湾共享布局与双标签导航
-
-**决定（2026-10-25，同日按用户要求修订直播归属）**：采用共享 Flutter 主题和按宽度选择的侧栏／底部导航。所有平台小于 600 逻辑像素时直播归首页子标签，底部为首页、动态、我的、设置；600 及以上直播作为独立一级入口。影视频道留在首页，不新增媒体库；保留现有业务组件与视频卡样式。移动端一级切换动效仍按平台与宽度单独判断。
-
-**导航边界**：双标签为单／多标签之外的可保存偏好，复用已有有界页面缓存和播放会话。浏览与播放两个可见槽独立，媒体返回历史保存身份与播放快照而非额外 engine；关闭播放槽回到原浏览页。平台默认值和有效用户偏好保持不变，跨宽度切换不重建页面或播放器。实现及验证见[实施记录](ui-redesign/implementation.md)。
-
-## D45：双标签桌面独立播放窗口
-
-**决定（2026-10-25，按用户确认修订 D44）**：Windows/macOS 双标签使用主浏览窗口与唯一独立播放窗口，覆盖视频、影视、直播和离线；Android 保持应用内双页。取消双模式的顶部标签栏，保留必要原生窗口控制。独立窗口共享 engine、账号、仓储与下载任务，窗口级 Navigator、输入和全屏隔离；浏览可见性不代替播放所有权。
-
-**实现边界**：固定 SDK 的实验窗口 API 封装在单一平台适配文件，保留 implicit 主 view 以兼容现有插件。不会为此升级 SDK 或新增第二套业务进程；API 仍是 internal，升级 Flutter 必须核对窗口、输入、AX、media_kit 与 window_manager 兼容。模式切换保留页面身份和会话，关闭窗口按关闭播放页处理。方案和逐平台验证见[第二轮计划](ui-redesign/refinement-plan.md)与[实施记录](ui-redesign/implementation.md)。
-
-## D46：退役单标签并将个人内容直接呈现在“我的”
-
-**决定（2026-10-25，按用户最新要求修订 D44/D45）**：产品仅提供双标签与多标签；旧单标签偏好迁移为双标签，Android 默认双标签，桌面默认多标签。个人内容以历史、稍后再看、收藏、下载四个标签直接展示，账号头部收为紧凑资料与退出入口；首页保留头像与搜索，移除重复工具按钮。
-
-**边界**：账号功能仅提供内容注入接口，由组合根复用各 feature 页面，保持 feature 层依赖方向与分页／下载生命周期。桌面播放窗返回合入原生标题栏；媒体导航激活窗口须保留用户尺寸和最大化状态，仅最小化窗口恢复。实验窗口 API 仍集中适配，不修改 SDK。迁移与验收见[第三轮方案](ui-redesign/third-round-plan.md)。
-
-## D47：一级导航共用根标签，双标签返回关闭临时页
-
-**决定（2026-10-25，按用户最新要求修订 D44–D46）**：首页、动态、直播、我的同层，共用固定根标签；根内容分别保留状态，切换一级入口不增加可关闭标签或返回记录。多标签移除左上角返回按钮。双标签返回先处理页内详情，再关闭离开的临时页；媒体历史仍可回退，历史耗尽时关闭播放窗口并释放会话。
-
-**栏目**：桌面直播以推荐、关注、观看记录直接作为子标签，保留头像和搜索；热门整合综合热门、每周必看、入站必刷与排行榜，兼容旧排行榜链接，保持动态榜单分区目录。消息复用共享标签条。协议以官网及参考项目的具体证据为准，账号拒绝不回退成其他栏目内容。按用户要求只做自动回归与构建，设备验收由用户完成，见[第四轮方案](ui-redesign/fourth-round-plan.md)。
-
-## D48：工具入口同层与紧凑资料区
-
-**决定（2026-10-25，修订 D47）**：消息、下载、设置也属于固定根导航，根容器按需保留频道、账号、消息、下载、设置五个分支，不新增可关闭标签。已有消息收件人 URI、设置分类和下载进程任务保持，隐藏分支不接收分页/刷新操作。
-
-**界面**：热门与首页/直播/消息复用标签视觉规则，一级导航图标统一常态和选中态。设置去除通用工具行；我的用紧凑响应式资料区恢复等级/经验/硬币/关注/粉丝/动态。共享卡片在窄可用宽度缩小边距与列间距，列数和大字体边界保持。仅自动回归和 Windows 构建，详见[第五轮方案](ui-redesign/fifth-round-plan.md)。
-
-## D49：内容子标签分层与播放窗口会话位置记忆
-
-**决定（2026-10-25，修订 D48）**：热门的四个子栏目采用番剧等内容筛选的左对齐纯文字样式，不带图标和指示线；一级频道继续保留原视觉层级。动态恢复头像与搜索，按后续用户要求，首次进入默认“动态”子标签，用户后续选择仍保留；导航采用完整可辨识的订阅图标。
-
-**窗口边界**：双标签桌面播放窗口关闭后，再打开任意媒体沿用当前应用会话的正常位置与尺寸。记忆由平台窗口适配持有，退出即清除，不写入设置或数据库；最大化、最小化和全屏不覆盖正常边界，恢复时检查当前屏幕可用区域。保留单一播放窗口、idle 调度、view 身份隔离及原会话释放顺序。按用户要求仅自动回归与 Windows 构建，原生拖动和跨显示器体验留待手动确认，见[第六轮方案](ui-redesign/sixth-round-plan.md)。
-
-**同日追加**：会话记忆也保留最大化标志，和正常矩形分开。重开先恢复正常矩形再最大化；手动还原后更新为普通窗口。最小化及全屏不覆盖此前的正常/最大化状态，仍不跨应用启动持久化。Windows 最大化及 macOS zoom 由各自原生适配处理；本轮仅 Windows 构建，不声明 macOS 编译或实机通过。
-
-## D50：Windows 播放窗标题栏高度与 Android 单页呈现
-
-**决定（2026-10-25，修订 D46 的 Windows 呈现）**：Windows 双标签播放窗使用 44 逻辑像素的 Flutter 标题栏，返回与窗口控制同排，按播放 view 分发拖动、最小化和最大化命令；原生适配保留缩放边框、窗口样式、会话内尺寸／最大化记忆和全屏机制。macOS 继续使用已有原生标题栏。
-
-**Android 边界**：双标签是应用内保留的浏览槽和播放槽，同一时间只显示一个页面；横屏或宽屏不会因双标签模式自动分屏，也不创建独立播放窗口。继续复用原有页面缓存、媒体返回历史和关闭释放语义。验证见[多标签与播放窗口记录](validation/multi-tab-playback.md)。
-
-## D51：各平台统一默认双标签
-
-**决定（2026-10-25，修订 D46 的导航默认值）**：各平台的导航默认值统一为双标签，设置领域模型与仓储的缺省值同步一致。首次启动及缺失／非法导航配置采用双标签；已保存的有效双标签或多标签选择保持，旧 `singlePage` 继续迁移至双标签，不改变设置快照或数据库版本。桌面独立播放窗与 Android 应用内切换沿用既有行为，见[多标签与播放窗口记录](validation/multi-tab-playback.md)。
-
-## D52：macOS implicit 主窗口使用应用内双标签
-
-本节记录第一次兼容修复，已由同日用户要求保留双窗口的 D53 取代。
-
-**决定（2026-10-25，修订 D45/D50/D51 的 macOS 呈现）**：固定 Flutter 3.47.6 的 macOS 实验窗口入口不能在已有 implicit view 的 engine 上启用 multiview，用户崩溃栈确认此路径触发原生断言并终止进程。窗口能力检查与创建防护统一放在平台适配，组合根按能力注入；当前 macOS 与 Android 一样使用应用内浏览／播放槽，Windows 保持独立播放窗。双标签偏好、媒体历史、隐藏页面状态和会话释放规则保持。
-
-**迁移边界**：macOS 独立播放窗须与无 implicit view 的原生 engine 启动方式及插件兼容一起迁移验收；不能只改 Dart 实验开关、捕获 Dart 异常或移除原生断言。证据、回归与实机待验项见[macOS 双标签播放崩溃](validation/macos-dual-playback-crash.md)。
-
-## D53：macOS 从原生启动阶段采用共享 engine 双窗口
-
-**决定（2026-10-25，按用户要求取代 D52）**：保留与 Windows 一致的主浏览窗口和唯一播放窗口。macOS 不在 NIB 创建 `FlutterViewController`，由 AppDelegate 启动唯一 headless engine；原生预检确认尚无 implicit 原生控制器后，Dart 的第一个 `RegularWindowController` 初始化 multiview 并创建浏览窗，`runWidget` 明确挂载该 view。后续播放窗口继续复用同一 engine、isolate、账号、下载与会话管理器。
-
-**插件与退出**：主窗口的 `WindowService` 通过组合根注入，跳过会查 implicit view 并替换 NSWindow delegate 的 `window_manager` 初始化。播放器使用 engine 的纹理注册器，全屏按对应 view 操作。主窗口关闭走 Flutter 可取消退出并等待资源释放；热重启暂时关闭全部窗口不自动终止进程。
-
-**验收边界**：同一待打包 Release 的 startup smoke 实际创建、挂载、激活、关闭并重开播放窗，不能以应用内回退代替通过。Dart 的 view 0 可能仍存在；是否能初始化 multiview 以原生控制器预检为准。Windows 自动回归不代替 macOS 编译、真实音视频和窗口操作，见[专项记录](validation/macos-dual-playback-crash.md)。
-
-## D54：应用退出等待同一份资源清理
-
-**决定（2026-10-25）**：关闭主窗口等同于退出整个应用，即使双标签播放窗仍打开。Windows 显式拦截 implicit 主窗关闭，macOS 合并系统退出并区分等待与获准状态，Android 确认退出在结束 Activity 前调用清理；所有入口等待同一个 `AppDependencies.close()` Future。沿用播放进度、下载和原生资源的既有释放顺序，关闭独立播放窗仍只释放其播放会话。实现、回归命令与强制终止／设备验证边界见[主窗口关闭专项](validation/main-window-close.md)。
-
-## D55：恢复单标签与 Android 默认模式
-
-**决定（2026-10-25，按用户后续要求修订 D46/D51）**：恢复 `singlePage`，Android 缺省采用单标签，其他平台继续默认双标签。已保存的有效单／双／多标签选择均优先于平台默认，不反推旧双标签值的来源，不覆盖已保存偏好。
-
-单标签按实际访问顺序返回，播放 → UP 空间 → 新播放可逐页回退；仍在历史中的页面沿用原作用域和会话，最后一次出栈才释放。与双标签共用页面缓存、页内／模态优先、播放互斥和预测返回入口，保留 16 页／64 次访问上限及模式切换时的会话身份，见[单标签记录](validation/single-page-navigation.md#恢复单标签2026-10-25)。
-
-## D56：iOS 与 Linux 先接入工程和 CI 预览包
-
-**决定（2026-10-26）**：按用户要求增加 iOS arm64 与 Linux x64，复用检查、播放契约及独立 mux；本地不打包。iOS 使用 CocoaPods 和 iPhoneOS arm64，输出须自行 Apple 签名的未签名 IPA；GitHub token 继续只承担 artifact／Release 上传。Linux 从完整 GTK bundle 同时生成 AppImage 与 Flatpak，保留媒体依赖、运行库版本及许可，Flatpak 限定沙盒权限。
-
-Linux 暂用扫码登录，以显式的 Dart 平台适配禁用实验 WPE WebKit 原生实现；其他平台的网页登录和四个业务包职责保持。新目标的首次远端构建、安装与设备播放须独立验收，不能以 Windows 离线检查或旧三端记录代替。细节与未测项见[iOS／Linux 记录](validation/ios-linux.md)。
-
-## D57：播放器触摸调节使用窗口亮度与既有播放音量
-
-**决定（2026-10-26，按用户后续要求扩展）**：普通／全屏左／右侧纵向滑动分别调整亮度与播放器音量，共用持久化开关，保留原 `fullscreenSwipeControls` 设置字段与有效旧值。Android 使用不需要系统设置权限的 Activity 窗口亮度覆盖，退出全屏／后台／关闭后恢复原值；其他平台用画面遮罩调暗。音量继续通过 `PlaybackSession` 归属当前源并继承应用运行期间的手动选择，不增加第二份播放器状态。实现与验证边界见[专项记录](validation/fullscreen-swipe-controls.md)。
-
-## D58：App 推荐采用独立身份与现有列表控制器
-
-**决定（2026-10-28）**：按用户要求参考 PiliPlus 接入 App 推荐，默认仍为 Web，来源变更立即生效。协议、签名和 aid 本地转换放在 `bili_api`；主应用的独立身份仓储保存稳定 buvid 与系统安全槽中的可选 App token，授权账号必须匹配当前 Web 账号。扫码仅由明确动作启动，模态拥有有界轮询、后台暂停及取消；不将 Web Cookie 伪装成 App 凭据。
-
-沿用现有 FeedController、分块索引、卡片和过滤规则，来源或 App 身份版本变化只失效推荐查询及其反馈。App 反馈使用服务端原因，即使协议为 GET 也只尝试一次；生产列表不逐卡补查详情。没有新增依赖、后台常驻任务或逐帧处理。来源、许可范围、离线与在线验收边界见[App 推荐设计](app-recommendation-design.md)。
-
-## D59：登录统一提交 Web 与可选 App 凭据
-
-**决定（2026-10-28，修订 D58 的独立 App 授权）**：正常 HD 扫码同时取得 Cookie/token；密码/短信保持内嵌官网，仅在 Cookie/nav 验证成功后保存 Web 会话。Cookie 换取 App token 的路径实测失败，按用户后续要求删除接口、调用及相关测试，避免兑换失败阻止网页登录。SessionRepository 统一保存一份 version=2 安全快照并提交会话，`app` 字段可选；有 token 时校验 UID 一致性及有效期。推荐数据层通过纯 Dart 端口读取，不再另起扫码状态机。
-
-按用户明确要求，不提供“更新登录”或设备标识编辑入口；设备标识由内部自动生成并持久化，保留已有值。所有登录方式都可选择 App 来源，无有效 App 凭据时使用游客推荐；设置仅提示实际推荐身份，已失效的账号授权指向重新扫码登录。旧 App 安全槽仅兼容读取并在取得统一 App 凭据、登出或账号变化时撤销。新快照写入、取消回滚及账号切换共用原队列，协议与验收见[统一登录设计](unified-login-design.md)。
-
-
-## D60：固定 Predidit 弹幕绘制与 media-kit Native Assets
-
-**决定（2026-10-29）**：按用户要求，`bili_danmaku` 接入固定提交的 `Predidit/canvas_danmaku` 批量 Canvas 绘制管线；包内保留无网络的时钟、布局、缓存预算与字体效果兼容。直接采用 `DanmakuScreen` 的独立动画时钟会改变暂停、seek 与倍速语义，因此使用其公开可扩展 painter，不额外创建 Ticker。
-
-`bili_player` 的核心及视频插件固定到同一 `Predidit/media-kit` 提交，移除 `media_kit_libs_*`，改用目标分支的 Native Assets。Windows 采用匹配 DXGI libmpv 与 D3D11/mailbox，撤销旧 ANGLE 库覆盖；仍校验源哈希并在构建副本应用释放、调度及视口保护。macOS 最低部署版本改为固定 Flutter Native Assets framework 所要求的 13.0，继续使用 CocoaPods。Linux 打包消费 hook 提供的 mpv。
-
-依赖、二进制来源、实施顺序、回退与逐平台验收见[切换方案](predidit-media-migration.md)。旧库的许可配置与性能记录不自动适用于新实现。
-
-## D61：一级页面静止呈现，底栏承担选中动效
-
-**决定（2026-10-30）**：底栏切换立即呈现保留的根页面，移除整个视频卡页面的 220ms 平移，保留底栏选中反馈、频道内触摸分页和原有页面／滚动状态。恢复图片页面时的整页位移会叠加光栅工作，仅减少业务卡片 build 无法消除该成本。空闲封面、图片和资料栏复用未变配置；活动、账号、数据与交互状态变化仍正常失效。
-
-不增加永久页面截图、图片容量或预加载，不改变隐藏页面停用绘制／预览与关闭页面释放资源的边界。候选消融、Windows Profile 对照和首帧／移动端未验收项见[窄屏切换优化结果](validation/narrow-video-card-navigation-results-2026-10-30.md)。
-
-
-## D62：Android 后台听视频采用临时模式覆盖
-
-**决定（2026-10-30）**：按用户要求，Android 进入后台自动以独立音轨继续，回前台恢复手动选择的模式。手动听视频意图与后台状态分别持有，前者进入页面检查点，后者只影响当前会话的所有新源。分 P、合集、显式队列、影视与相关视频接续时，下一项意图优先于旧检查点的模式。
-
-Android 复用既有媒体服务，暂停／换源期间不撤下前台服务，停止／关闭时结束。没有独立音轨的直播和混合源继续暂停。相关视频连播为默认关闭的独立设置，仅在普通视频的分 P／合集末尾接续，显式播放队列和影视保持原末尾边界。实现、设置兼容、自动测试及实机未验收项见[Android 后台听视频](validation/android-background-playback.md)和[连续播放](validation/continuous-playback.md#相关视频接续2026-10-30)。
-
-## D63：桌面窗口呈现状态按角色跨启动保存
-
-**决定（2026-10-31）**：按用户要求，主窗口和播放窗口分别持久保存普通矩形及最大化状态，跨账号共用；替代此前播放窗仅在应用会话内记忆的范围。最小化／全屏不作为下一次打开状态，最大化仍保留主动还原需要的普通矩形，旧播放 owner 不得覆盖新窗口。
-
-此状态由原生窗口层在首次显示和业务数据库打开前恢复，使用本机原生配置存储，独立于 `AppSettings`、SQLite schema、账号和设置导入／重置。沿用可见工作区限制和缺失／损坏记录回退。平台存储、Wayland 位置限制与验证边界见[桌面窗口状态持久化](validation/window-geometry-persistence.md)。
-
-## D64：滚动与固定弹幕共用调度、分层绘制
-
-**决定（2026-11-01）**：按用户后续要求参考 PiliPlus，将滚动内容放在独立底层、顶部／底部固定内容放在上层；各层内部按到达顺序绘制，替代此前跨类型按到达顺序交错的覆盖方式。外部组透明度和用户设置保持，不另起 Ticker、时钟、调度器或位图缓存。
-
-点播与直播共用分层宿主，每帧仅准备一次入场、过期与位置；两个 painter 只消费该帧。固定层仅在显示内容、布局、样式或 DPR 变化时失效，滚动不反复录制固定文字。保留原媒体／到达时钟、暂停／seek、容量上限与释放边界。回归、对照方法和性能证据见[分层记录](validation/danmaku-layers-performance-2026-11-01.md)，不将分层本身当作已证明的 GPU 收益。
-
-## D65：播放器与弹幕依赖直接对齐 PiliPlus
-
-**决定（2026-11-01）**：按用户后续要求，替换此前 Predidit 依赖，固定为相邻 PiliPlus 锁文件的核心、视频、原生库插件和 canvas_danmaku 来源。保留应用会话、请求策略、弹幕调度与分层契约，不导入 GPLv3 应用实现。Windows 使用匹配 ANGLE／libmpv，并在构建副本继续提供平台线程、视口和释放保护；Apple／Linux 切换匹配的库插件打包边界。来源、API 差异、回归与验收限制见[依赖切换](validation/piliplus-dependencies-2026-11-01.md)。不以依赖名称或历史数据宣称 GPU 改善。
-
-## D66：Windows 视频与弹幕合成使用 Skia
-
-**决定（2026-11-01）**：继续对比 PiliPlus 后，在 Windows runner 显式关闭 Impeller，与参考应用的渲染后端选择一致。固定引擎此前默认启用 Impeller OpenGLESSDF，真实全屏播放的单独开关对照显示，该路径叠加透明弹幕时成本明显增加。只通过 Flutter 提供的 `DartProject` API 选择后端，不另起原生窗口、修改 Pub 缓存或改变硬解配置／用户透明度／显示刷新率驱动的 Ticker。
-
-同一视频的 `hwdec-current` 在两种后端下均为 `d3d11va-copy`；不能把 `hwdec=auto`、视频纹理 GPU 复制和实际解码模式混为一谈。精确来源、交叉复测、回归及适用范围见[Windows Skia 播放记录](validation/windows-skia-playback-2026-11-01.md)。升级 Flutter 后须重新复核纹理、透明合成和窗口生命周期，再决定是否恢复 Impeller。
-
-## D67：搜索发现按内容宽度呈现，历史由应用仓储按账号持有
-
-**决定（2026-11-01）**：参考官方桌面应用和 PiliPlus 的交互职责，工作区同排搜索聚焦时居中并将分类模糊淡出，分行搜索直接展开历史与热搜；内容宽度小于 600 时进入独立窗口内搜索页。复用既有搜索结果导航、工作区状态和播放会话，不创建另一套结果页面。
-
-搜索历史以版本化、账号隔离的有界快照保存到现有 settings 表，串行写入且失败保留已保存数据；热搜由独立公开只读端点加载、短期缓存，真实关键词与展示名分开。只参考 GPLv3 应用的协议字段和交互，自行实现组件。详细布局、容量、来源与验证边界见[搜索历史与热搜](validation/search-discovery-2026-11-01.md)。
-
-## D68：Windows ANGLE 使用修正 EGL device 查询的完整 libmpv SDK
-
-**决定（2026-11-01）**：按用户要求，先修复 `d3d11va-copy` 回退并测量性能。保留 D65 的 Dart 核心／视频／库插件／事件桥、ANGLE 和 D66 的 Skia，Windows libmpv SDK 单独固定为包含 mpv `1d156861…` 修复的基础 x86_64 标准 OpenGL 构建。唯一现行资产清单为 `windows/native/media-assets.cmake`；预取、编译、最终打包使用同一清单，整体校验和选择 headers、import library、DLL，不修改 Pub 缓存或启用历史 `mpv.cmake`。
-
-本机 H.264／HEVC／AV1 自动模式实读为 `d3d11va`；三组 Profile 交叉对照同时记录 CPU、GPU、频率、功耗、内存和掉帧。该选择不等于 DXGI／原生视频平面，不更改弹幕或自动解码偏好，也不保证未测 GPU 的直通。完整证据、版本升级的归因限制与未测项见[实施记录](validation/windows-angle-direct-hwdec-2026-11-01.md)。
+**重评条件**：装上仓颉 SDK 并跑通 `cjpm build --target aarch64-linux-ohos` 后，用同一批 fixture 比对两种实现的片段输出；若一致再扩大边界（如弹幕轨道布局）。

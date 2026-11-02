@@ -1,0 +1,12 @@
+{
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "BiliSail 鸿蒙入口模块",
+  "main": "",
+  "author": "BiliSail OpenHarmony port",
+  "license": "GPL-3.0-only",
+  "dependencies": {
+    "@ohos/flutter_ohos": "file:../har/ohos/flutter_ohos",
+    "libbilicore": "file:./src/main/cangjie"
+  }
+}

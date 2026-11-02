@@ -13,7 +13,10 @@ import '../core/presentation/workspace_activity.dart';
 import '../core/presentation/page_back_scope.dart';
 import '../core/presentation/predictive_back_region.dart';
 import '../core/presentation/trackpad_back_region.dart';
+import 'workspace_bottom_bar.dart';
 import 'workspace_tabs.dart';
+import '../features/create/presentation/create_entry_sheet.dart';
+import '../features/create/presentation/create_screen.dart';
 import 'workspace_navigation.dart';
 import 'workspace_back_presentation.dart';
 import 'platform_defaults.dart';
@@ -1656,122 +1659,46 @@ final class _BiliAppShellState extends State<BiliAppShell>
       tab.location,
       compact: _compactChannels,
     );
-    if (!sections.contains(selected)) {
-      return _unselectedBottomNavigation(context, sections);
-    }
     // A highlighted group can include other pages, such as history under
     // Mine. Suppress re-selection only on the destination's own page.
-    final atSelectedDestination = switch (selected) {
+    final highlighted = sections.contains(selected) ? selected : null;
+    final atSelectedDestination = switch (highlighted) {
       WorkspaceSection.mine => tab.isAccount,
       WorkspaceSection.settings => tab.isSettings,
+      null => true,
       _ => tab.isBrowse,
     };
-    return NavigationBar(
-      key: const ValueKey('workspace-bottom-navigation'),
-      animationDuration: MediaQuery.disableAnimationsOf(context)
-          ? Duration.zero
-          : const Duration(milliseconds: 220),
-      height: _bottomNavigationHeight,
-      labelPadding: EdgeInsets.zero,
-      labelTextStyle: WidgetStateProperty.resolveWith((states) {
-        final colors = Theme.of(context).colorScheme;
-        return _bottomNavigationLabelStyle.copyWith(
-          color: states.contains(WidgetState.selected)
-              ? colors.onSurface
-              : colors.onSurfaceVariant,
-        );
-      }),
-      selectedIndex: sections.indexOf(selected),
-      onDestinationSelected: (index) {
-        if (sections[index] != selected || !atSelectedDestination) {
-          _selectSection(sections[index], compact: true);
-        }
-      },
-      destinations: [
-        for (final item in sections)
-          NavigationDestination(
-            key: ValueKey('workspace-bottom-${item.name}'),
-            icon: Icon(_sectionIcon(item), size: _bottomNavigationIconSize),
-            selectedIcon: Icon(
-              _sectionIcon(item, selected: true),
-              size: _bottomNavigationIconSize,
-            ),
-            label: item.label,
+    return WorkspaceBottomBar(
+      items: [
+        for (final section in sections)
+          WorkspaceBottomBarItem(
+            id: section.name,
+            label: section.label,
+            icon: _sectionIcon(section),
+            selectedIcon: _sectionIcon(section, selected: true),
+            selected: section == highlighted,
+            onSelected: () {
+              if (section != highlighted || !atSelectedDestination) {
+                _selectSection(section, compact: true);
+              }
+            },
           ),
       ],
+      createLabel: '创作',
+      onCreate: () => _openCreateEntry(context),
+      height: _bottomNavigationHeight,
+      iconSize: _bottomNavigationIconSize,
+      labelStyle: _bottomNavigationLabelStyle,
     );
   }
 
-  Widget _unselectedBottomNavigation(
-    BuildContext context,
-    List<WorkspaceSection> sections,
-  ) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final barTheme = NavigationBarTheme.of(context);
-    return Material(
-      key: const ValueKey('workspace-bottom-navigation'),
-      color: barTheme.backgroundColor ?? colors.surface,
-      child: SafeArea(
-        top: false,
-        child: SizedBox(
-          height: _bottomNavigationHeight,
-          child: Row(
-            children: [
-              for (final section in sections)
-                Expanded(
-                  child: Tooltip(
-                    message: section.label,
-                    child: Semantics(
-                      selected: false,
-                      button: true,
-                      label: section.label,
-                      child: InkWell(
-                        key: ValueKey('workspace-bottom-${section.name}'),
-                        onTap: () => _selectSection(section, compact: true),
-                        child: Center(
-                          child: ExcludeSemantics(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                // Keep NavigationDestination's indicator slot
-                                // even when no primary destination is selected.
-                                Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    const NavigationIndicator(
-                                      animation: kAlwaysDismissedAnimation,
-                                    ),
-                                    Icon(
-                                      _sectionIcon(section),
-                                      size: _bottomNavigationIconSize,
-                                      color: colors.onSurfaceVariant,
-                                    ),
-                                  ],
-                                ),
-                                MediaQuery.withClampedTextScaling(
-                                  // Match NavigationDestination's label limit.
-                                  maxScaleFactor: 1.3,
-                                  child: Text(
-                                    section.label,
-                                    style: _bottomNavigationLabelStyle.copyWith(
-                                      color: colors.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
+  /// Opens the centre action: pick a flow, then run the form above the
+  /// workspace. Both steps are modal, so no workspace tab is created and the
+  /// retained pages keep their state.
+  Future<void> _openCreateEntry(BuildContext context) async {
+    final entry = await showCreateEntrySheet(context);
+    if (entry == null || !context.mounted) return;
+    await CreateScreen.open(context, entry);
   }
 
   Widget _tabStrip(BuildContext context, {Widget? navigationTools}) {

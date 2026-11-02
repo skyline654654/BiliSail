@@ -13,6 +13,9 @@ import '../shared/ui/app_dialog.dart';
 import '../core/platform/desktop_window_chrome.dart';
 import '../core/platform/detached_playback_window.dart';
 import '../core/platform/window_service.dart';
+import '../core/presentation/immersive_canvas.dart';
+import '../core/presentation/immersive_light_theme.dart';
+import 'theme.dart';
 import '../features/auth/application/auth_controller.dart';
 import '../features/downloads/domain/download_models.dart';
 import '../features/downloads/presentation/download_dialog.dart';
@@ -448,8 +451,14 @@ class _BiliAppState extends ConsumerState<BiliApp> {
                       interactions: cardInteractions,
                       onNotice: showAppNotice,
                       hoverPlaybackEnabled: settings.videoCardHoverPlayback,
-                      child: AndroidSystemUi(
-                        child: child ?? const SizedBox.shrink(),
+                      child: ImmersiveCanvas(
+                        canvasColor: BiliTheme.canvasColor(
+                          Theme.of(context).brightness,
+                        ),
+                        enabled: ImmersiveLightTheme.enabled,
+                        child: AndroidSystemUi(
+                          child: child ?? const SizedBox.shrink(),
+                        ),
                       ),
                     ),
                   ),
@@ -461,13 +470,17 @@ class _BiliAppState extends ConsumerState<BiliApp> {
         locale: const Locale('zh', 'CN'),
         supportedLocales: const [Locale('zh', 'CN'), Locale('en')],
         localizationsDelegates: GlobalMaterialLocalizations.delegates,
-        theme: BiliTheme.light(
-          font: settings.font,
-          systemFontFamily: settings.systemFontFamily,
+        theme: ImmersiveLightTheme.apply(
+          BiliTheme.light(
+            font: settings.font,
+            systemFontFamily: settings.systemFontFamily,
+          ),
         ),
-        darkTheme: BiliTheme.dark(
-          font: settings.font,
-          systemFontFamily: settings.systemFontFamily,
+        darkTheme: ImmersiveLightTheme.apply(
+          BiliTheme.dark(
+            font: settings.font,
+            systemFontFamily: settings.systemFontFamily,
+          ),
         ),
         themeMode: switch (settings.theme) {
           AppThemePreference.system => ThemeMode.system,

@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 
+import '../core/presentation/immersive_light_theme.dart';
 import '../features/settings/domain/app_settings.dart';
 
 abstract final class BiliTheme {
   static const accent = Color(0xFFD94B68);
   static const canvas = Colors.white;
   static const ink = Color(0xFF253343);
+
+  /// The opaque canvas colour. ImmersiveCanvas paints this under the light
+  /// gradient, so the value must stay independent of the theme tweaks.
+  static Color canvasColor(Brightness brightness) =>
+      brightness == Brightness.dark
+      ? const Color(0xFF141D27)
+      : const Color(0xFFEDF3F9);
 
   static ThemeData light({
     AppFontPreference font = AppFontPreference.harmonyOsSans,
@@ -56,9 +64,7 @@ abstract final class BiliTheme {
       brightness: brightness,
       colorScheme: scheme,
       fontFamily: fontFamily,
-      scaffoldBackgroundColor: dark
-          ? const Color(0xFF141D27)
-          : const Color(0xFFEDF3F9),
+      scaffoldBackgroundColor: canvasColor(brightness),
       dividerColor: border,
       hoverColor: primary.withValues(alpha: 0.045),
       focusColor: primary.withValues(alpha: 0.1),
@@ -67,96 +73,98 @@ abstract final class BiliTheme {
     final controlShape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(10),
     );
-    return base.copyWith(
-      appBarTheme: AppBarTheme(
-        backgroundColor: surface,
-        foregroundColor: foreground,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-      ),
-      navigationRailTheme: NavigationRailThemeData(
-        backgroundColor: surface,
-        indicatorColor: scheme.primaryContainer,
-        selectedIconTheme: IconThemeData(color: primary),
-        unselectedIconTheme: IconThemeData(color: muted),
-        selectedLabelTextStyle: TextStyle(color: primary),
-        unselectedLabelTextStyle: TextStyle(color: muted),
-      ),
-      navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: surface,
-        surfaceTintColor: Colors.transparent,
-        indicatorColor: scheme.primaryContainer,
-        elevation: 0,
-      ),
-      cardTheme: CardThemeData(
-        color: panel,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-          side: BorderSide(color: border),
+    return ImmersiveLightTheme.apply(
+      base.copyWith(
+        appBarTheme: AppBarTheme(
+          backgroundColor: surface,
+          foregroundColor: foreground,
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
         ),
-      ),
-      dividerTheme: DividerThemeData(color: border, thickness: 1, space: 1),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: surface,
-        isDense: true,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 12,
+        navigationRailTheme: NavigationRailThemeData(
+          backgroundColor: surface,
+          indicatorColor: scheme.primaryContainer,
+          selectedIconTheme: IconThemeData(color: primary),
+          unselectedIconTheme: IconThemeData(color: muted),
+          selectedLabelTextStyle: TextStyle(color: primary),
+          unselectedLabelTextStyle: TextStyle(color: muted),
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: border),
+        navigationBarTheme: NavigationBarThemeData(
+          backgroundColor: surface,
+          surfaceTintColor: Colors.transparent,
+          indicatorColor: scheme.primaryContainer,
+          elevation: 0,
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: border),
+        cardTheme: CardThemeData(
+          color: panel,
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: BorderSide(color: border),
+          ),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: primary),
+        dividerTheme: DividerThemeData(color: border, thickness: 1, space: 1),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: surface,
+          isDense: true,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 12,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: border),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: border),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: primary),
+          ),
         ),
-      ),
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(shape: controlShape),
-      ),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
+        filledButtonTheme: FilledButtonThemeData(
+          style: FilledButton.styleFrom(shape: controlShape),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            shape: controlShape,
+            side: BorderSide(color: border),
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(shape: controlShape),
+        ),
+        chipTheme: base.chipTheme.copyWith(
           shape: controlShape,
           side: BorderSide(color: border),
         ),
-      ),
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(shape: controlShape),
-      ),
-      chipTheme: base.chipTheme.copyWith(
-        shape: controlShape,
-        side: BorderSide(color: border),
-      ),
-      textTheme: base.textTheme.copyWith(
-        headlineMedium: base.textTheme.headlineMedium?.copyWith(
-          fontSize: 24,
-          fontWeight: FontWeight.w500,
-        ),
-        titleLarge: base.textTheme.titleLarge?.copyWith(
-          fontSize: 20,
-          fontWeight: FontWeight.w500,
-        ),
-        titleMedium: base.textTheme.titleMedium?.copyWith(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-        titleSmall: base.textTheme.titleSmall?.copyWith(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-        ),
-        bodyMedium: base.textTheme.bodyMedium?.copyWith(fontSize: 14),
-        bodySmall: base.textTheme.bodySmall?.copyWith(
-          fontSize: 12,
-          color: muted,
+        textTheme: base.textTheme.copyWith(
+          headlineMedium: base.textTheme.headlineMedium?.copyWith(
+            fontSize: 24,
+            fontWeight: FontWeight.w500,
+          ),
+          titleLarge: base.textTheme.titleLarge?.copyWith(
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
+          ),
+          titleMedium: base.textTheme.titleMedium?.copyWith(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+          titleSmall: base.textTheme.titleSmall?.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+          bodyMedium: base.textTheme.bodyMedium?.copyWith(fontSize: 14),
+          bodySmall: base.textTheme.bodySmall?.copyWith(
+            fontSize: 12,
+            color: muted,
+          ),
         ),
       ),
     );

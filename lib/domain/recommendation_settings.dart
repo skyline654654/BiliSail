@@ -1,3 +1,4 @@
+import 'ad_card_classifier.dart';
 import 'video.dart';
 import 'recommendation_source.dart';
 export 'recommendation_source.dart';
@@ -16,6 +17,7 @@ final class RecommendationSettings {
     List<String> categoryKeywords = const [],
     this.exemptFollowed = true,
     this.filterRelated = true,
+    this.blockAds = true,
   }) : minimumLikeRatio =
            minimumLikeRatio >= 0 && minimumLikeRatio <= maximumLikeRatio
            ? minimumLikeRatio
@@ -42,7 +44,8 @@ final class RecommendationSettings {
       titleKeywords = const [],
       categoryKeywords = const [],
       exemptFollowed = true,
-      filterRelated = true;
+      filterRelated = true,
+      blockAds = true;
 
   static const likeRatios = [0, 1, 2, 3, 4];
   static const durations = [0, 30, 60, 90, 120];
@@ -54,6 +57,10 @@ final class RecommendationSettings {
   static const maximumPlayCount = 2147483647;
 
   final bool keepPrevious, showPreviousMarker, exemptFollowed, filterRelated;
+
+  /// Removes advertising cards from recommendation surfaces. Defaults on:
+  /// the product requirement is to block all ads without asking again.
+  final bool blockAds;
   final RecommendationSource source;
   final int minimumLikeRatio, minimumDurationSeconds, minimumPlayCount;
   final List<String> titleKeywords, categoryKeywords;
@@ -66,6 +73,7 @@ final class RecommendationSettings {
     categoryKeywords.join('\u0000'),
     exemptFollowed,
     filterRelated,
+    blockAds,
   );
 
   static List<String> _keywords(List<String> input) => List.unmodifiable(
@@ -109,6 +117,7 @@ final class RecommendationSettings {
       categoryKeywords: words('categoryKeywords'),
       exemptFollowed: flag('exemptFollowed', true),
       filterRelated: flag('filterRelated', true),
+      blockAds: flag('blockAds', true),
     );
   }
 
@@ -123,6 +132,7 @@ final class RecommendationSettings {
     'categoryKeywords': categoryKeywords,
     'exemptFollowed': exemptFollowed,
     'filterRelated': filterRelated,
+    'blockAds': blockAds,
   };
 
   RecommendationSettings copyWith({
@@ -136,6 +146,7 @@ final class RecommendationSettings {
     List<String>? categoryKeywords,
     bool? exemptFollowed,
     bool? filterRelated,
+    bool? blockAds,
   }) => RecommendationSettings(
     source: source ?? this.source,
     keepPrevious: keepPrevious ?? this.keepPrevious,
@@ -148,6 +159,7 @@ final class RecommendationSettings {
     categoryKeywords: categoryKeywords ?? this.categoryKeywords,
     exemptFollowed: exemptFollowed ?? this.exemptFollowed,
     filterRelated: filterRelated ?? this.filterRelated,
+    blockAds: blockAds ?? this.blockAds,
   );
 }
 
@@ -164,10 +176,12 @@ final class RecommendationFilter {
 
   final RecommendationSettings settings;
   final List<String> _titles, _categories;
+  final AdCardClassifier _ads = const AdCardClassifier();
 
   bool enabledFor(RecommendationSurface surface) =>
       (surface != RecommendationSurface.related || settings.filterRelated) &&
-      (_titles.isNotEmpty ||
+      (settings.blockAds ||
+          _titles.isNotEmpty ||
           _categories.isNotEmpty ||
           settings.minimumLikeRatio > 0 ||
           settings.minimumPlayCount > 0 ||
@@ -176,6 +190,19 @@ final class RecommendationFilter {
 
   bool allows(VideoSummary video, RecommendationSurface surface) {
     if (!enabledFor(surface)) return true;
+    // Advertising is removed before the followed-account exemption: an account
+    // you follow can still publish a paid card, and the requirement is to block
+    // advertising everywhere.
+    if (settings.blockAds &&
+        _ads.isAdvertisement(
+          title: video.title,
+          author: video.author,
+          categoryName: video.categoryName,
+          reason: video.recommendationReason,
+          duration: video.duration,
+        )) {
+      return false;
+    }
     if (surface == RecommendationSurface.recommended &&
         settings.exemptFollowed &&
         video.isFollowed == true) {
