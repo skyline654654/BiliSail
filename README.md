@@ -5,7 +5,7 @@
 > 文档：[鸿蒙适配手册](docs/harmony-adaptation.md) · [仓颉移植手册](docs/cangjie-port.md) ·
 > [广告屏蔽与 AI 跳过](docs/ad-blocking.md) · [鸿蒙接口符合性清单](docs/harmony-conformance.md) · [验证状态](docs/validation/adaptation-status-2026-11-02.md)
 >
-> ⚠️ ArkTS 与仓颉侧**尚未编译**（本机无 DevEco Studio / 仓颉 SDK），只经语法审查；细节见验证状态表。
+> ✅ 已实测（2026-11-02）：仓颉 `cjpm build` 通过且与 Dart 实现 8/8 逐行等价；鸿蒙 `hvigorw assembleHap` **BUILD SUCCESSFUL**；`codelinter` Errors 0；`flutter analyze` 0 issues；签名包由官方 `hap-sign-tool verify-app` 校验通过。**真机 / 云调试运行仍未做**，见 `docs/harmony-conformance.md` 第 5 节。
 
 <p align="center">
   <img src="assets/branding/app_icon.png" width="144" height="144" alt="BiliSail 哔帆应用图标">

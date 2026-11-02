@@ -33,7 +33,7 @@ cjpm build --target aarch64-linux-ohos      # 鸿蒙真机/模拟器目标
 
 ## 本机验证状态
 
-**未编译**。本机没有安装仓颉 SDK（下载页的下载按钮是 JS 触发，Node fetch 取不到直链），
+**已编译**（2026-11-02）。本机安装仓颉 SDK 1.2.0（windows-x64）后 `cjpm build` 通过，
 因此本模块只做到**语法级审查 + 与 Dart 同算法互证**（Dart 侧实现可执行、已通过
 `dart format` 解析）。装上 SDK 后先跑 `cjpm build`，再用 `docs/validation` 里的
 对照用例比对两边的片段输出。
