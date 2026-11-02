@@ -1,7 +1,7 @@
-package bilicore.abi
+package bilisail::bilicore.abi
 
 import std.collection.*
-import bilicore.ad.*
+import bilisail::bilicore.ad.*
 
 /**
  * C ABI 导出面，供 Dart FFI 与 ArkTS 侧调用。
@@ -55,7 +55,7 @@ public func bilicore_detect_airstrike(
         var input = ArrayList<Int64>()
         var index: Int32 = 0
         while (index < count) {
-            input.append(points.read(Int64(index)))
+            input.add(points.read(Int64(index)))
             index += 1
         }
         let options = AirstrikeOptions(

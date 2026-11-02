@@ -1,0 +1,111 @@
+{
+  "bin": {},
+  "pkg-build": {
+    "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\src": {
+      "package": "bilisail::bilicore",
+      "isMacro": false,
+      "accessLevel": "public",
+      "timeStamp": 1793634423,
+      "dependencies": [],
+      "std-dependencies": [
+        {
+          "std.core": []
+        }
+      ],
+      "features": [],
+      "product": true,
+      "testUsed": false,
+      "mockUsed": false
+    },
+    "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\src\\ad": {
+      "package": "bilisail::bilicore.ad",
+      "isMacro": false,
+      "accessLevel": "public",
+      "timeStamp": 1793634481,
+      "dependencies": [
+        {
+          "orPackage": "",
+          "package": "std.collection",
+          "isStd": true,
+          "imports": [
+            {
+              "file": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\src\\ad\\airstrike.cj"
+            },
+            {
+              "file": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\src\\ad\\segment.cj"
+            }
+          ]
+        }
+      ],
+      "std-dependencies": [
+        {
+          "std.collection": [
+            "std.core",
+            "std.math"
+          ]
+        },
+        {
+          "std.core": []
+        },
+        {
+          "std.math": [
+            "std.core"
+          ]
+        }
+      ],
+      "features": [],
+      "product": true,
+      "testUsed": false,
+      "mockUsed": false
+    },
+    "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\src\\abi": {
+      "package": "bilisail::bilicore.abi",
+      "isMacro": false,
+      "accessLevel": "public",
+      "timeStamp": 1793634493,
+      "dependencies": [
+        {
+          "orPackage": "",
+          "package": "bilisail::bilicore.ad",
+          "isStd": false,
+          "imports": [
+            {
+              "file": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\src\\abi\\exports.cj"
+            }
+          ]
+        },
+        {
+          "orPackage": "",
+          "package": "std.collection",
+          "isStd": true,
+          "imports": [
+            {
+              "file": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\src\\abi\\exports.cj"
+            }
+          ]
+        }
+      ],
+      "std-dependencies": [
+        {
+          "std.collection": [
+            "std.core",
+            "std.math"
+          ]
+        },
+        {
+          "std.core": []
+        },
+        {
+          "std.math": [
+            "std.core"
+          ]
+        }
+      ],
+      "features": [],
+      "product": true,
+      "testUsed": false,
+      "mockUsed": false
+    }
+  },
+  "pkg-test": {}
+}

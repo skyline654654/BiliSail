@@ -1,0 +1,32 @@
+{
+  "options~bilisail::bilicore.abi|aarch64-linux-ohos|false|false|": {
+    "value": 8612670236363524377,
+    "inputHash": 0,
+    "outputHash": 8612670236363524377
+  },
+  "options~bilisail::bilicore.ad|aarch64-linux-ohos|false|false|": {
+    "value": 177797802951544237,
+    "inputHash": 0,
+    "outputHash": 177797802951544237
+  },
+  "read~bilisail::bilicore.ad|": {
+    "value": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\src\\ad",
+    "inputHash": 0,
+    "outputHash": 145988019522862015
+  },
+  "read~bilisail::bilicore.abi|": {
+    "value": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\src\\abi",
+    "inputHash": 0,
+    "outputHash": 3155947217148974704
+  },
+  "read~bilisail::bilicore|": {
+    "value": "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\src",
+    "inputHash": 0,
+    "outputHash": 3155947217148969097
+  },
+  "options~bilisail::bilicore|aarch64-linux-ohos|false|false|": {
+    "value": -8301938418862709544,
+    "inputHash": 0,
+    "outputHash": -8301938418862709544
+  }
+}

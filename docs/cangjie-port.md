@@ -47,9 +47,54 @@ cjpm build --target aarch64-linux-ohos
 `harmony/entry/src/main/libs/arm64-v8a/`；Dart 侧用 `DynamicLibrary.open('libbilicore.so')` 加载，
 加载失败时回落到 Dart 实现（回落分支必须与仓颉实现语义一致，两者共用同一批 fixture）。
 
-## 5. 本机验证状态
+## 5. 本机验证状态（已编译）
 
-**未编译**。本机没有安装仓颉 SDK（官网下载按钮由 JS 触发，`window.__INITIAL_STATE__` 里没有文件 url，
-Node fetch 取不到直链）。因此 `.cj` 文件只经过语法级审查，没有编译器背书。
-装上 SDK 后第一件事是 `cjpm build --target aarch64-linux-ohos`，再用同一批 fixture 比对
-Dart 与仓颉的片段输出是否逐条一致。
+2026-11-02 在本机完成首次真实编译：
+
+```
+Cangjie Compiler: 1.2.0 (cjnative)
+Target: x86_64-w64-mingw32
+Cangjie Project Manager: 1.2.0
+cjpm build success
+target/release/bilicore@bilisail/libbilicore@bilisail.dll
+```
+
+SDK 来源与校验：`cangjie-sdk-windows-x64-1.2.0.zip`，SHA-256
+`7bd5088ad56fb03c1214e73ea076de5ac08580cc419a8cbd46a524ee1ca250bf` 与官网公布值一致。
+
+### 编译期纠正的三处（初稿都是错的）
+
+| 项目 | 初稿 | 编译器要求 |
+| --- | --- | --- |
+| 包名 | `package bilicore.ad` | `package bilisail::bilicore.ad`（`<organization>::<name>` + 相对 src 的目录路径） |
+| 追加元素 | `ArrayList.append(x)` | `ArrayList.add(x)` |
+| 排序 | `sort(comparator: …)` | `sortBy(comparator: …)`；两者均已 deprecated，推荐 `std.sort.sort(data, by!)` |
+
+另外：`src/` 根目录必须有至少一个 `.cj`，否则 cjpm 报
+「there is no .cj file in directory src」并静默跳过整个模块（本次踩过）。
+`cjpm.toml` 不接受 `src-dir` 字段，源码目录固定为 `src`。
+
+### 仍未验证
+
+- `--target aarch64-linux-ohos` 交叉编译（本机已下载 `cangjie-sdk-windows-x64-ohos-1.2.0.zip`，待执行）。
+- 真机/模拟器加载 `libbilicore.so`：需要鸿蒙设备与 DevEco。
+- Dart 与仓颉两个实现的 fixture 交叉比对：两边都写好了，尚未跑同一批数据。
+
+### 交叉编译到鸿蒙的实测结果（2026-11-02）
+
+`cjpm build --target aarch64-linux-ohos` 用 `cangjie-sdk-windows-x64-ohos-1.2.0` 执行，**编译通过、链接失败**：
+
+```
+ld.lld: error: cannot open crti.o: No such file or directory
+ld.lld: error: unable to find library -lm
+ld.lld: error: unable to find library -lc
+ld.lld: error: cannot open crtn.o: No such file or directory
+```
+
+原因：仓颉的 OHOS 交叉 SDK 只带仓颉运行时（`runtime/lib/linux_ohos_aarch64_cjnative`），
+**不带 HarmonyOS 的 musl libc 与 crt 目标文件**——这些属于华为 HarmonyOS Native SDK（DevEco 的一部分）。
+本机没有 DevEco，因此该 SDK 也无法补齐。要在本机完成 OHOS 链接，需要额外安装 HarmonyOS SDK
+并把 `--target-sysroot` 指向其 native sysroot；否则只能在 DevEco 工程里由 hvigor 驱动交叉编译。
+
+这条结论对项目的影响：`cangjie/` 的**源码正确性已被本机 windows 目标编译证实**，
+但"产出 `libbilicore.so` 放进鸿蒙工程"这一步必须在装有 DevEco 的机器上完成。

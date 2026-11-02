@@ -1,14 +1,15 @@
 [package]
-# 仓颉 STS 1.2.0（2026-09-22）。鸿蒙交叉目标 aarch64-linux-ohos 是其一等目标。
-cjc-version = "1.2.0"
-name = "bilicore"
-description = "BiliSail 的仓颉核心：纯计算、无网络、无 UI"
-version = "0.1.0"
-organization = "bilisail"
-# Dart FFI 需要动态库；ArkTS 侧同样按 libs/<abi>/ 加载。
-output-type = "dynamic"
-src-dir = "src"
-compile-option = ""
+  cjc-version = "1.2.0"
+  name = "bilicore"
+  organization = "bilisail"
+  description = "BiliSail 的仓颉核心：纯计算、无网络、无 UI"
+  version = "0.1.0"
+  target-dir = ""
+  script-dir = ""
+  output-type = "dynamic"
+  compile-option = ""
+  override-compile-option = ""
+  link-option = ""
+  package-configuration = {}
 
-[target.aarch64-linux-ohos]
-[target.x86_64-linux-ohos]
+[dependencies]

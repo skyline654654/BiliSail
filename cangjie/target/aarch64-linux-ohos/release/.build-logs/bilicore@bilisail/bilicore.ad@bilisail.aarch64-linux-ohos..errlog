@@ -1,0 +1,23 @@
+warning[0m: function 'sortBy' is deprecated. Use global function `public func sort<T>(data: ArrayList<T>, by!: (T, T) -> Ordering, stable!: Bool = false, descending!: Bool = false): Unit` in std.sort instead.
+  ==> C:\Users\16857\Desktop\dsh\_bilisail\work\BiliSail-OpenHarmony\cangjie\src\ad\airstrike.cj:36:13:
+   | 
+36 |     ordered.sortBy(comparator: { a: Int64, b: Int64 => a.compare(b) })
+   |             ^^^^^^ deprecated
+   | 
+   # note: this warning can be suppressed by setting the compiler option `-Woff deprecated`
+
+warning[0m: function 'sortBy' is deprecated. Use global function `public func sort<T>(data: ArrayList<T>, by!: (T, T) -> Ordering, stable!: Bool = false, descending!: Bool = false): Unit` in std.sort instead.
+  ==> C:\Users\16857\Desktop\dsh\_bilisail\work\BiliSail-OpenHarmony\cangjie\src\ad\segment.cj:76:13:
+   | 
+76 |     ordered.sortBy(comparator: {
+   |             ^^^^^^ deprecated
+   | 
+   # note: this warning can be suppressed by setting the compiler option `-Woff deprecated`
+
+2 warnings generated, 2 warnings printed.
+ld.lld: error: cannot open crti.o: No such file or directory
+ld.lld: error: unable to find library -lm
+ld.lld: error: unable to find library -lc
+ld.lld: error: cannot open crtn.o: No such file or directory
+error: ""C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\cangjie-ohos-sdk\\cangjie\\third_party\\llvm\\bin\\ld.lld.exe" "-o" "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\work\\BiliSail-OpenHarmony\\cangjie\\target\\aarch64-linux-ohos\\release\\bilicore@bilisail\\libbilicore.ad@bilisail.so" "-z" "noexecstack" "-z" "max-page-size=4096" "--hash-style=gnu" "-m" "aarch64linux" "-shared" "-dynamic-linker" "/lib/ld-musl-aarch64.so.1" "crti.o" "-LC:\\Users\\16857\\Desktop\\dsh\\_bilisail\\cangjie-ohos-sdk\\cangjie\\lib\\linux_ohos_aarch64_cjnative" "-LC:\\Users\\16857\\Desktop\\dsh\\_bilisail\\cangjie-ohos-sdk\\cangjie\\runtime\\lib\\linux_ohos_aarch64_cjnative" "-rpath-link" "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\cangjie-ohos-sdk\\cangjie\\runtime\\lib\\linux_ohos_aarch64_cjnative" "-T" "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\cangjie-ohos-sdk\\cangjie\\lib\\linux_ohos_aarch64_cjnative\\cjld.shared.lds" "C:\\Users\\16857\\Desktop\\dsh\\_bilisail\\cangjie-ohos-sdk\\cangjie\\lib\\linux_ohos_aarch64_cjnative\\cjstart.o" "C:\\Users\\16857\\AppData\\Local\\Temp\\cangjie-tmp-DMKUE88B6ZT4-da8e2a85\\bilicore.ad@bilisail.o" "-l:libcangjie-std-collection.so" "--as-needed" "-l:libcangjie-std-core.so" "-l:libcangjie-std-math.so" "--no-as-needed" "-l:libcangjie-runtime.so" "-LC:\\Users\\16857\\Desktop\\dsh\\_bilisail\\cangjie-ohos-sdk\\cangjie\\lib\\linux_ohos_aarch64_cjnative" "-lboundscheck" "-lm" "-lc" "-lclang_rt.builtins" "-lunwind" "crtn.o" ": command failed with exit code 1 (use -V to see invocation)
+Error: failed to compile package `bilisail::bilicore.ad`, return code is 1

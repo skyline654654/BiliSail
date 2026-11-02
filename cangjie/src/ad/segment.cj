@@ -1,9 +1,9 @@
-package bilicore.ad
+package bilisail::bilicore.ad
 
 import std.collection.*
 
 /**
- * 广告片段来源。数值越小优先级越低；合并时高优先级来源取得片段身份。
+ * 广告片段来源。priority 越大，合并时越优先保留其身份。
  */
 public enum AdSource {
     | SponsorBlock
@@ -31,7 +31,7 @@ public enum AdSource {
 }
 
 /**
- * 一条视频内广告片段，时间单位统一为毫秒，避免浮点跨边界。
+ * 一条视频内广告片段，时间单位统一为毫秒。
  */
 public struct AdSegment {
     public let startMs: Int64
@@ -69,26 +69,23 @@ func stronger(a: AdSegment, b: AdSegment): AdSegment {
 /**
  * 合并重叠或间距不超过 mergeGapMs 的片段，返回按 startMs 升序的结果。
  *
- * 与 Dart 侧 `lib/features/ads/domain/ad_segment.dart` 的 `mergeAdSegments`
- * 保持同一语义：合并后取更高优先级来源与更高置信度。
+ * 与 Dart 侧 `mergeAdSegments` 保持同一语义：合并后取更高优先级来源与更高置信度。
  */
 public func mergeSegments(input: ArrayList<AdSegment>, mergeGapMs: Int64): ArrayList<AdSegment> {
     var ordered = ArrayList<AdSegment>(input)
-    ordered.sort(
-        comparator: {
-            a: AdSegment, b: AdSegment => a.startMs.compare(b.startMs)
-        }
-    )
+    ordered.sortBy(comparator: {
+        a: AdSegment, b: AdSegment => a.startMs.compare(b.startMs)
+    })
     var merged = ArrayList<AdSegment>()
     for (segment in ordered) {
         if (merged.isEmpty()) {
-            merged.append(segment)
+            merged.add(segment)
             continue
         }
         let previous = merged[merged.size - 1]
         let adjacent = segment.startMs <= previous.endMs + mergeGapMs
         if (!adjacent) {
-            merged.append(segment)
+            merged.add(segment)
             continue
         }
         let strongest = stronger(previous, segment)
@@ -103,9 +100,7 @@ public func mergeSegments(input: ArrayList<AdSegment>, mergeGapMs: Int64): Array
     return merged
 }
 
-/**
- * 返回覆盖 positionMs 的片段；多个重叠时取置信度最高的一条。
- */
+/** 返回覆盖 positionMs 的片段；多条重叠时取置信度最高的一条。 */
 public func segmentAt(segments: ArrayList<AdSegment>, positionMs: Int64): ?AdSegment {
     var best: ?AdSegment = None
     for (segment in segments) {

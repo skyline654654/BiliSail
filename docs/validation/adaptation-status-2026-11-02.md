@@ -4,6 +4,8 @@
 
 ## 已执行并通过
 
+| 仓颉本机编译 | `cangjie-sdk-windows-x64-1.2.0`（SHA-256 与官网一致）+ `cjpm build` | **success**，产出 libbilicore@bilisail.dll，2 条 deprecated 警告 |
+
 | 检查 | 方法 | 结果 |
 | --- | --- | --- |
 | Dart 语法与格式 | Dart SDK 3.13.7 `dart format`（`_bilisail/tools/dart-sdk`） | 18 个改动文件，0 解析错误 |
@@ -17,7 +19,7 @@
 | --- | --- | --- |
 | `flutter analyze` / `flutter test` | 本机无 Flutter SDK；`pubspec.yaml` 依赖 media-kit 的 git overrides，需可访问 github 的 git 传输（本机 git 走 schannel 失败） | 在有 Flutter 3.47.6 的机器上跑 `tool/check.ps1` |
 | ArkTS 编译与实机运行 | 无 DevEco Studio / 鸿蒙 SDK | DevEco Studio 打开 `harmony/`，`hvigorw assembleHap` |
-| 仓颉编译 | 无仓颉 SDK（官网下载按钮为 JS 触发，Node fetch 取不到直链） | 装 `cangjie-sdk-windows-x64-ohos-1.2.0`，`cjpm build --target aarch64-linux-ohos` |
+| 仓颉 OHOS 交叉编译 | 本机只有 windows-x64 目标 SDK | 用 `cangjie-sdk-windows-x64-ohos-1.2.0` 跑 `cjpm build --target aarch64-linux-ohos` |
 | 沉浸光感观感 | 需要真机 + API 26 | 真机对比 `backgroundBlurStyle` 与 `systemMaterial` |
 | 投稿/发布接口 | 未做在线验证，且写操作需真实账号 | 见 `docs/api-design.md` 的登记规则，不自动重放写请求 |
 

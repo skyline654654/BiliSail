@@ -9,6 +9,7 @@ import 'app/bili_app.dart';
 import 'app/dependencies.dart';
 import 'app/release_smoke.dart';
 import 'core/presentation/bili_widgets_binding.dart';
+import 'core/platform/harmony_system.dart';
 import 'core/presentation/window_input_focus.dart';
 import 'core/platform/macos_application_window.dart';
 import 'core/storage/app_database.dart';
@@ -19,6 +20,11 @@ Future<void> main(List<String> arguments) async {
     stderr.writeln('BILISAIL_RELEASE_STAGE:dart-entry');
   }
   BiliWidgetsBinding.ensureInitialized();
+  // The ArkUI shell answers capabilities once at startup. Awaiting keeps the
+  // first frame from drawing a Flutter bottom bar that the shell replaces.
+  // On every other platform this returns immediately.
+  await HarmonySystem.attach();
+  await HarmonySystem.applyImmersiveLayout();
   if (Platform.isAndroid) {
     await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   }
