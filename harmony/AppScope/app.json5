@@ -1,6 +1,6 @@
 {
   "app": {
-    "bundleName": "dev.bilisail.harmony",
+    "bundleName": "dev.bilisail.client",
     "vendor": "bilisail",
     "versionCode": 1000260,
     "versionName": "1.2.6",
