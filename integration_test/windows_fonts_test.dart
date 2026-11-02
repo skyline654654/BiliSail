@@ -44,7 +44,7 @@ void main() {
                       const SizedBox(height: 16),
                       Text(family, style: const TextStyle(fontSize: 16)),
                       Text(
-                        '哔帆 · 字体预览 Aa 0123456789',
+                        'bili easy · 字体预览 Aa 0123456789',
                         style: TextStyle(fontFamily: family, fontSize: 26),
                       ),
                       Text(
@@ -78,7 +78,7 @@ void main() {
       final painter = TextPainter(
         textDirection: TextDirection.ltr,
         text: TextSpan(
-          text: '哔帆 Aa 0123',
+          text: 'bili easy Aa 0123',
           style: TextStyle(
             fontFamily: family,
             fontSize: 30,

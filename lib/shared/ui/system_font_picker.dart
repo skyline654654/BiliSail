@@ -88,7 +88,7 @@ final class _SystemFontDialogState extends ConsumerState<_SystemFontDialog> {
                                     return ListTile(
                                       title: Text(family),
                                       subtitle: Text(
-                                        '哔帆 BiliSail · Aa 0123456789',
+                                        'bili easy · Aa 0123456789',
                                         style: TextStyle(fontFamily: family),
                                       ),
                                       trailing: family == widget.selected

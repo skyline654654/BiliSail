@@ -506,7 +506,7 @@ final class _BiliAppShellState extends State<BiliAppShell>
       final exit = await showAppDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('退出哔帆？'),
+          title: const Text('退出 bili easy？'),
           content: const Text('确定要退出应用吗？'),
           actions: [
             TextButton(
@@ -960,7 +960,7 @@ final class _BiliAppShellState extends State<BiliAppShell>
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          '哔帆',
+                          'bili easy',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: desktopCaptionTextStyle,
@@ -1521,7 +1521,7 @@ final class _BiliAppShellState extends State<BiliAppShell>
                           const SizedBox(width: 9),
                           Flexible(
                             child: Text(
-                              '哔帆',
+                              'bili easy',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.titleLarge

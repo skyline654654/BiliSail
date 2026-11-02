@@ -24,7 +24,7 @@ class MacOSApplicationWindow {
     var requestingExit = false;
     return MacOSApplicationWindow(
       DetachedPlaybackWindow.create(
-        title: 'BiliSail',
+        title: 'bili easy',
         size: const Size(1120, 800),
         constraints: const BoxConstraints(minWidth: 420, minHeight: 560),
         onCloseRequested: () {

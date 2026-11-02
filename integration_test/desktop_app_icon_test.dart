@@ -82,7 +82,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(
         tester
-            .widget<ChoiceChip>(find.widgetWithText(ChoiceChip, '哔帆'))
+            .widget<ChoiceChip>(find.widgetWithText(ChoiceChip, 'bili easy'))
             .selected,
         isTrue,
       );
