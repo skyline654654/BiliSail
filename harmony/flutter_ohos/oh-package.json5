@@ -1,0 +1,8 @@
+{
+  "name": "@ohos/flutter_ohos",
+  "version": "1.0.0",
+  "description": "OFFLINE STUB of the OpenHarmony Flutter embedding; swap with the engine har.",
+  "main": "Index.ets",
+  "author": "bilisail",
+  "license": "Apache-2.0"
+}

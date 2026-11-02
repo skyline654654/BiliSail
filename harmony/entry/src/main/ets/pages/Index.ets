@@ -29,8 +29,8 @@ struct Index {
     {
       id: 'dynamic',
       label: '动态',
-      symbol: $r('sys.symbol.dot_square'),
-      selectedSymbol: $r('sys.symbol.dot_square_fill')
+      symbol: $r('sys.symbol.square_grid_2x2'),
+      selectedSymbol: $r('sys.symbol.square_grid_2x2')
     },
     {
       id: 'mine',
@@ -47,7 +47,7 @@ struct Index {
   ];
 
   aboutToAppear(): void {
-    const sides: AvoidAreaSides = HarmonySystem.queryAvoidArea() as AvoidAreaSides;
+    const sides: AvoidAreaSides = HarmonySystem.queryAvoidArea();
     this.avoidBottom = sides.bottom;
     HarmonySystem.onAvoidAreaChanged((next: AvoidAreaSides) => {
       // 旋转、折叠、分屏切换都会走这里，底栏随之重新预留高度。

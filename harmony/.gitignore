@@ -1,0 +1,8 @@
+# HarmonyOS build output and installed dependencies
+build/
+entry/build/
+flutter_ohos/build/
+.hvigor/
+oh_modules/
+har/
+local.properties

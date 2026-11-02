@@ -19,6 +19,11 @@
   },
   "modules": [
     {
+      "name": "flutter_ohos",
+      "srcPath": "./flutter_ohos",
+      "targets": [{ "name": "default", "applyToProducts": ["default"] }]
+    },
+    {
       "name": "entry",
       "srcPath": "./entry",
       "targets": [{ "name": "default", "applyToProducts": ["default"] }]

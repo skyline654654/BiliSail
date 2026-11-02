@@ -1,0 +1,8 @@
+{
+  "name": "@ohos/flutter_ohos",
+  "version": "1.0.0",
+  "description": "OFFLINE STUB. Replace this folder with the real @ohos/flutter_ohos har from openharmony-sig/flutter_flutter before building a runnable app.",
+  "main": "Index.ets",
+  "author": "bilisail",
+  "license": "Apache-2.0"
+}

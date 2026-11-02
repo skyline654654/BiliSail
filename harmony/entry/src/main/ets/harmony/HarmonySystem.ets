@@ -1,6 +1,13 @@
 import { window } from '@kit.ArkUI';
 import { AvoidAreaWatcher, AvoidAreaSides } from './AvoidAreaWatcher';
 
+/** 通道上返回给 Flutter 的避让区形状（单位 vp）。 */
+export interface AvoidAreaReply {
+  bottom: number;
+  top: number;
+  sources: string[];
+}
+
 /**
  * 通道协议层：把 Flutter 侧 `bilisail/harmony_system` 的调用翻译成
  * HarmonyOS 窗口能力。
@@ -61,18 +68,31 @@ export class HarmonySystem {
   }
 
   /** 读取当前避让区（单位 vp）。 */
-  static queryAvoidArea(): Record<string, string | number | boolean | string[]> {
+  static queryAvoidArea(): AvoidAreaSides {
     const watcher = HarmonySystem.watcher;
     const sides: AvoidAreaSides = watcher === undefined
       ? { bottom: 0, top: 0, sources: [] }
       : watcher.read();
-    const result: Record<string, string | number | boolean | string[]> = {
-      'bottom': sides.bottom,
-      'top': sides.top,
-      'sources': sides.sources
-    };
-    return result;
+    return sides;
   }
+
+  /**
+   * 把 ArkUI 底栏的选择回传给 Flutter。
+   *
+   * 真实实现走引擎的 MethodChannel 反向调用（见 FlutterEngineGlue）；离线壳里没有
+   * 引擎，因此记录为待处理请求而不丢弃，便于联调时补上。
+   */
+  static requestSectionSelect(section: string): void {
+    HarmonySystem.pendingSections.push(section);
+  }
+
+  /** 把中间「+」打开的分支（video / article）回传给 Flutter。 */
+  static requestCreateEntry(entry: string): void {
+    HarmonySystem.pendingCreateEntries.push(entry);
+  }
+
+  static pendingSections: string[] = [];
+  static pendingCreateEntries: string[] = [];
 
   /**
    * 重新打开沉浸式布局。

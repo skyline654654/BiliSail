@@ -27,7 +27,6 @@ export default class EntryAbility extends UIAbility {
   private avoidArea: AvoidAreaWatcher | undefined = undefined;
 
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-    this.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
     hilog.info(DOMAIN, TAG, 'onCreate');
   }
 
