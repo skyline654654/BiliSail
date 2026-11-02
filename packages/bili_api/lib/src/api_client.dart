@@ -59,6 +59,7 @@ final class BiliApiClient {
   DateTime? _wbiFetched;
 
   static final _api = Uri.https('api.bilibili.com', '/');
+  static final _member = Uri.https('member.bilibili.com', '/');
   static final _passport = Uri.https('passport.bilibili.com', '/');
   static const _readAttemptTimeout = Duration(seconds: 2);
 
@@ -416,6 +417,21 @@ final class BiliApiClient {
     return _submitForm(_api.replace(path: path), endpoint, fields, context);
   }
 
+  /// 创作中心（投稿）走 \`member.bilibili.com\`，与 \`api.bilibili.com\` 是两个 host。
+  ///
+  /// 2026-11-02 实测：\`api.bilibili.com/x/vu/web/add\` 以及 /v3、/client/add 都返回 404，
+  /// 只有 \`member.bilibili.com/x/vu/web/add\` 返回 200 与业务错误码，因此投稿必须用这个 host。
+  Future<Object?> submitMemberForm(
+    String path,
+    String endpoint,
+    Map<String, String> fields, {
+    ApiRequestContext? context,
+  }) async {
+    if (!const {'/x/vu/web/add'}.contains(path)) {
+      throw ArgumentError('Unsupported member mutation');
+    }
+    return _submitForm(_member.replace(path: path), endpoint, fields, context);
+  }
   /// The live host has its own Cookie scope, Origin and mutation allowlist.
   Future<Object?> submitLiveForm(
     String path,

@@ -43,11 +43,12 @@ final class CreationClient {
     required String title,
     required String content,
     bool original = false,
+    int articleCategory = 21,
     ApiRequestContext? context,
   }) async {
     const endpoint = 'creation_article';
     if (title.trim().isEmpty || content.trim().isEmpty) {
-      throw const ApiFailure(ApiFailureCategory.protocol, endpoint);
+      throw ApiFailure(ApiFailureCategory.protocol, endpoint);
     }
     final result = await api.submitForm(
       '/x/article/creative/article/submit',
@@ -56,7 +57,11 @@ final class CreationClient {
         'title': title,
         'content': content,
         'template_id': '4',
-        'original': original ? '1' : '0',
+        // 实测（2026-11-02）：分类参数名是 `category`（不是 tid），缺它返回
+        // 20022「分类错误」；补上后错误推进到 20023「转载类型错误」，说明
+        // `original` 的取值域也要按原创/转载的既有枚举给。
+        'category': '$articleCategory',
+        'original': original ? '1' : '2',
       },
       context: context,
     );
@@ -78,9 +83,11 @@ final class CreationClient {
         coverAssetId.isEmpty ||
         mediaAssetIds.isEmpty ||
         mediaAssetIds.length > 10) {
-      throw const ApiFailure(ApiFailureCategory.protocol, endpoint);
+      throw ApiFailure(ApiFailureCategory.protocol, endpoint);
     }
-    final result = await api.submitForm(
+    // 2026-11-02 实测：只有 member.bilibili.com 的这个路径存在（api 的 /x/vu/web/add、
+    // /v3、/client/add 全部 404）。完整参数集需一次真实投稿才能确认，见 docs。
+    final result = await api.submitMemberForm(
       '/x/vu/web/add',
       endpoint,
       {
@@ -120,7 +127,7 @@ final class CreationClient {
     List<String> idKeys,
   ) {
     if (body is! Map<String, Object?>) {
-      throw const ApiFailure(ApiFailureCategory.protocol, endpoint);
+      throw ApiFailure(ApiFailureCategory.protocol, endpoint);
     }
     final data = body['data'];
     for (final key in idKeys) {
@@ -137,6 +144,6 @@ final class CreationClient {
         );
       }
     }
-    throw const ApiFailure(ApiFailureCategory.protocol, endpoint);
+    throw ApiFailure(ApiFailureCategory.protocol, endpoint);
   }
 }
