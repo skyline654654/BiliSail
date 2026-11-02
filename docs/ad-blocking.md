@@ -50,3 +50,4 @@ AiAssistedSponsorRepository
 
 没有真实账号与在线环境，跳过链路**未做在线验证**；`AirstrikeDetector` 与仓颉侧的聚类算法
 目前只有同一套语义的两种实现，尚未用真实弹幕做交叉比对。
+C:/Users/16857/Desktop/dsh/_bilisail/ad-note.md
